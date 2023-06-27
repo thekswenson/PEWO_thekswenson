@@ -14,6 +14,8 @@ from pewo.software import AlignmentSoftware, PlacementSoftware
 from pewo.templates import get_software_dir, get_common_queryname_template, get_common_template_args, \
     get_output_template, get_output_template_args
 
+_work_dir = cfg.get_work_dir(config)
+
 def get_accuracy_nd_plots() -> List[str]:
     """
     Creates a list of plot files that will be computed in the accuracy mode.
@@ -21,14 +23,14 @@ def get_accuracy_nd_plots() -> List[str]:
     l = list()
     #epa-ng
     if "epang" in config["test_soft"]:
-        l.append(expand(config["workdir"] + "/summary_plot_ND_epang_{heuristic}.svg",
+        l.append(expand(_work_dir + "/summary_plot_ND_epang_{heuristic}.svg",
                         heuristic=config["config_epang"]["heuristics"]))
-        l.append(expand(config["workdir"] + "/summary_table_ND_epang_{heuristic}.csv",
+        l.append(expand(_work_dir + "/summary_table_ND_epang_{heuristic}.csv",
                         heuristic=config["config_epang"]["heuristics"]))
     #all other software
-    l.append(expand(config["workdir"] + "/summary_plot_ND_{soft}.svg",
+    l.append(expand(_work_dir + "/summary_plot_ND_{soft}.svg",
                     soft=[x for x in config["test_soft"] if x != "epang"]))
-    l.append(expand(config["workdir"] + "/summary_table_ND_{soft}.csv",
+    l.append(expand(_work_dir + "/summary_table_ND_{soft}.csv",
                     soft=[x for x in config["test_soft"] if x != "epang"]))
     return l
 
@@ -40,14 +42,14 @@ def get_accuracy_end_plots() -> List[str]:
     l = list()
     #epa-ng
     if "epang" in config["test_soft"]:
-        l.append(expand(config["workdir"] + "/summary_plot_eND_epang_{heuristic}.svg",
+        l.append(expand(_work_dir + "/summary_plot_eND_epang_{heuristic}.svg",
                         heuristic=config["config_epang"]["heuristics"]))
-        l.append(expand(config["workdir"] + "/summary_table_eND_epang_{heuristic}.csv",
+        l.append(expand(_work_dir + "/summary_table_eND_epang_{heuristic}.csv",
                         heuristic=config["config_epang"]["heuristics"]))
     #all other software
-    l.append(expand(config["workdir"] + "/summary_plot_eND_{soft}.svg",
+    l.append(expand(_work_dir + "/summary_plot_eND_{soft}.svg",
                     soft=[x for x in config["test_soft"] if x != "epang"]))
-    l.append(expand(config["workdir"] + "/summary_table_eND_{soft}.csv",
+    l.append(expand(_work_dir + "/summary_table_eND_{soft}.csv",
                     soft=[x for x in config["test_soft"] if x != "epang"]))
     return l
 
@@ -56,19 +58,17 @@ def get_likelihood_plots() -> List[str]:
     """
     Returns a list of plots that will be computed in the likelihood mode
     """
-    _working_dir = cfg.get_work_dir(config)
-
     #FIXME: Add heuristic-based output names for EPA-NG
     software_list = [software for software in config["test_soft"] if software != "epang"]
 
-    tables = expand(config["workdir"] + "/summary_table_LL_{software}.csv", software=software_list)
-    plots = expand(config["workdir"] + "/summary_plot_LL_{software}.svg", software=software_list)
+    tables = expand(_work_dir + "/summary_table_LL_{software}.csv", software=software_list)
+    plots = expand(_work_dir + "/summary_plot_LL_{software}.svg", software=software_list)
 
     return list(itertools.chain(tables, plots))
 
 
 def get_resources_outputs() -> List[str]:
-    return [os.path.join(config["workdir"], "resources.tsv")]
+    return [os.path.join(_work_dir, "resources.tsv")]
 
 
 #def get_resources_plots() -> List[str]:
@@ -86,7 +86,7 @@ def build_accuracy_workflow() -> List[str]:
     placements = build_placements_workflow()
 
     # node distances from jplace outputs
-    csv = [config["workdir"] + "/results.csv"]
+    csv = [_work_dir + "/results.csv"]
 
     # collection of results and generation of summary plots
     node_distance_reports = get_accuracy_nd_plots()
@@ -102,10 +102,10 @@ def build_resources_workflow() -> List[str]:
     l = []
 
     # call outputs from operate_inputs module to build input reads as pruning=0 and r=0
-    l.append(config["workdir"] + "/A/0.align")
-    l.append(config["workdir"] + "/T/0.tree")
-    l.append(config["workdir"] + "/G/0.fasta")
-    l.append(config["workdir"] + "/R/0_r0.fasta")
+    l.append(_work_dir + "/A/0.align")
+    l.append(_work_dir + "/T/0.tree")
+    l.append(_work_dir + "/G/0.fasta")
+    l.append(_work_dir + "/R/0_r0.fasta")
 
     # placements
     l.extend(build_placements_workflow())
@@ -126,7 +126,7 @@ def build_likelihood_workflow() -> List[str]:
     placements = build_placements_workflow()
 
     # likelihood values from jplace outputs
-    csv = [os.path.join(config["workdir"], "likelihood.csv")]
+    csv = [os.path.join(_work_dir, "likelihood.csv")]
 
     # plots
     likelihood_reports = get_likelihood_plots()
@@ -175,7 +175,7 @@ def build_placements_workflow() -> List[str]:
     Builds expected outputs from tested placement software ("test_soft" field in the config file)
     """
     # list of optimized trees
-    trees = expand(config["workdir"] + "/T/{pruning}_optimised.tree",
+    trees = expand(_work_dir + "/T/{pruning}_optimised.tree",
                    pruning=range(config["pruning_count"]))
 
     # hmm alignments for alignment-based methods

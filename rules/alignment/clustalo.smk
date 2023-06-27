@@ -9,20 +9,25 @@ __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
 
+import pewo.config as cfg
+
+_work_dir = cfg.get_workdir(config)
+
+
 rule clustalo_profile_alignment:
     '''
     align to profile
     '''
     input:
-        align=config["workdir"]+"/A/{pruning}.align",
-        reads=config["workdir"]+"/R/{pruning}_r{length}.fasta"
+        align=_work_dir+"/A/{pruning}.align",
+        reads=_work_dir+"/R/{pruning}_r{length}.fasta"
     output:
-        temp(config["workdir"]+"/HMM/{pruning}_r{length}.clustalo.fasta")
+        temp(_work_dir+"/HMM/{pruning}_r{length}.clustalo.fasta")
     version: "1.0"
     log:
-        config["workdir"]+"/logs/clustalo/{pruning}_r{length}.log"
+        _work_dir+"/logs/clustalo/{pruning}_r{length}.log"
     benchmark:
-        repeat(config["workdir"]+"/benchmarks/{pruning}_r{length}_clustalo_benchmark.tsv", config["repeats"])
+        repeat(_work_dir+"/benchmarks/{pruning}_r{length}_clustalo_benchmark.tsv", config["repeats"])
     params:
         states=["DNA"] if config["states"]==0 else ["Protein"]
     shell:
@@ -46,11 +51,11 @@ rule clustalo_split_alignment:
     contrary to other placement software, such input is required by epa-ng
     '''
     input:
-        align=config["workdir"]+"/HMM/{pruning}_r{length}.clustalo.fasta",
-        reads=config["workdir"]+"/R/{pruning}_r{length}.fasta"
+        align=_work_dir+"/HMM/{pruning}_r{length}.clustalo.fasta",
+        reads=_work_dir+"/R/{pruning}_r{length}.fasta"
     output:
-        config["workdir"]+"/HMM/{pruning}_r{length}.fasta_queries",
-        config["workdir"]+"/HMM/{pruning}_r{length}.fasta_refs"
+        _work_dir+"/HMM/{pruning}_r{length}.fasta_queries",
+        _work_dir+"/HMM/{pruning}_r{length}.fasta_refs"
     version: "1.0"
     shell:
         "pewo/split_hmm_alignment.py {input.reads} {input.align}"

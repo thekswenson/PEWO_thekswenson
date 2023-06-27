@@ -79,7 +79,7 @@ rule split_queries:
             **get_common_template_args(config)
         )
     log:
-        config["workdir"] + "/logs/split_queries.log"
+        _work_dir + "/logs/split_queries.log"
     version:
         "1.00"
     run:
@@ -211,7 +211,7 @@ rule calculate_likelihood_epa:
     output:
           csv=get_output_template(config, PlacementSoftware.EPA, "csv")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.EPA.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -228,7 +228,7 @@ rule calculate_likelihood_epang_h1:
     output:
           csv=get_output_template(config, PlacementSoftware.EPANG, "csv", heuristic="h1")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.EPANG.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -245,7 +245,7 @@ rule calculate_likelihood_epang_h2:
     output:
           csv=get_output_template(config, PlacementSoftware.EPANG, "csv", heuristic="h2")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.EPANG.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -262,7 +262,7 @@ rule calculate_likelihood_epang_h3:
     output:
           csv=get_output_template(config, PlacementSoftware.EPANG, "csv", heuristic="h3")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.EPANG.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -279,7 +279,7 @@ rule calculate_likelihood_epang_h4:
     output:
           csv=get_output_template(config, PlacementSoftware.EPANG, "csv", heuristic="h4")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.EPANG.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -296,7 +296,7 @@ rule calculate_likelihood_pplacer:
     output:
           csv=get_output_template(config, PlacementSoftware.PPLACER, "csv")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.PPLACER.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -313,7 +313,7 @@ rule calculate_likelihood_rappas:
     output:
           csv=get_output_template(config, PlacementSoftware.RAPPAS, "csv")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.RAPPAS.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -329,7 +329,7 @@ rule calculate_likelihood_rappas2:
     log:
         get_output_template(config, PlacementSoftware.RAPPAS2, "calc_ll.log")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.RAPPAS2.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -346,7 +346,7 @@ rule calculate_likelihood_apples:
     output:
           csv=get_output_template(config, PlacementSoftware.APPLES, "csv")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.APPLES.value,
           model="GTR+G",
           optimization=config["lac"]["optimization"]
@@ -363,7 +363,7 @@ rule calculate_likelihood_appspam:
     output:
           csv=get_output_template(config, PlacementSoftware.APPSPAM, "csv")
     params:
-          workdir=cfg.get_work_dir(config),
+          workdir=_work_dir,
           software=PlacementSoftware.APPSPAM.value,
           model="GTR+G"
     run:

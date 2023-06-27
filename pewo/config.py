@@ -9,6 +9,7 @@ __license__ = "MIT"
 
 from enum import Enum
 from typing import Any, Dict
+from pathlib import Path
 from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts
 
 
@@ -24,9 +25,10 @@ class Mode(Enum):
 
 def get_work_dir(config: Dict) -> str:
     """
-    Returns working directory path. This is the root directory of PEWO output.
+    Returns working directory path, turned into an absolute path.
+    This is the root directory of PEWO output.
     """
-    return config["workdir"]
+    return str(Path(config["workdir"]).resolve())
 
 
 def get_read_generator(config: Dict) -> str:

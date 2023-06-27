@@ -56,16 +56,16 @@ rule operate_pruning:
         t = config["dataset_tree"],
         r = get_input_reads()
     output:
-        a = expand(config["workdir"] + "/A/{pruning}.align", pruning=range(config["pruning_count"])),
-        t = expand(config["workdir"] + "/T/{pruning}.tree", pruning=range(config["pruning_count"])),
-        g = expand(config["workdir"] + "/G/{pruning}.fasta", pruning=range(config["pruning_count"])),
+        a = expand(_work_dir + "/A/{pruning}.align", pruning=range(config["pruning_count"])),
+        t = expand(_work_dir + "/T/{pruning}.tree", pruning=range(config["pruning_count"])),
+        g = expand(_work_dir + "/G/{pruning}.fasta", pruning=range(config["pruning_count"])),
         r = get_pruning_output_read_files() if _generate_reads(config) else []
     log:
-        config["workdir"] + "/logs/operate_pruning.log"
+        _work_dir + "/logs/operate_pruning.log"
     version:
         "1.00"
     params:
-        wd = config["workdir"],
+        wd = _work_dir,
         count = config["pruning_count"],
         states = config["states"],
         jar = config["pewo_jar"],

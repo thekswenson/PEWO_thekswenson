@@ -12,7 +12,10 @@ __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
 import os
+import pewo.config as cnf
 
+
+_work_dir = cnf.get_work_dir(config)
 
 # TODO: script of function to compute reads from alignment
 
@@ -31,21 +34,21 @@ rule define_resource_inputs:
         t=config["dataset_tree"],
         r=queries()
     output:
-        aout=config["workdir"]+"/A/0.align",
-        tout=config["workdir"]+"/T/0.tree",
-        gout=config["workdir"]+"/G/0.fasta",
-        rout=config["workdir"]+"/R/0_r0.fasta"
+        aout=_work_dir+"/A/0.align",
+        tout=_work_dir+"/T/0.tree",
+        gout=_work_dir+"/G/0.fasta",
+        rout=_work_dir+"/R/0_r0.fasta"
     run:
-        if not os.path.isdir(config["workdir"]):
-            os.mkdir(config["workdir"])
-        if not os.path.isdir(config["workdir"]+"/A"):
-            os.mkdir(config["workdir"]+"/A")
-        if not os.path.isdir(config["workdir"]+"/T"):
-            os.mkdir(config["workdir"]+"/T")
-        if not os.path.isdir(config["workdir"]+"/G"):
-            os.mkdir(config["workdir"]+"/G")
-        if not os.path.isdir(config["workdir"]+"/R"):
-            os.mkdir(config["workdir"]+"/R")
+        if not os.path.isdir(_work_dir):
+            os.mkdir(_work_dir)
+        if not os.path.isdir(_work_dir+"/A"):
+            os.mkdir(_work_dir+"/A")
+        if not os.path.isdir(_work_dir+"/T"):
+            os.mkdir(_work_dir+"/T")
+        if not os.path.isdir(_work_dir+"/G"):
+            os.mkdir(_work_dir+"/G")
+        if not os.path.isdir(_work_dir+"/R"):
+            os.mkdir(_work_dir+"/R")
         shell(
             """
             cp {input.a} {output.aout}

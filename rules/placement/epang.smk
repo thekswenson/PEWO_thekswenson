@@ -117,9 +117,9 @@ rule placement_epang_h1:
     '''
     operate placement
     note: epa-ng does not allow to set a name for outputs, it always uses epa_info.log and epa_result.log
-    moreover, it will refuse to rerun if epa-info.log is present, this obliges to built a temporary working directory
-    for each launch (if not concurrent launches will fail if epa_info.log is present or worse write in the same file
-    if --redo option is used).
+    moreover, it will refuse to rerun if epa-info.log is present, this obliges us to built a temporary working directory
+    for each launch (if not, concurrent launches will fail if epa_info.log is present, or worse, write in the same file
+    if the --redo option is used).
     '''
     input:
         r=_get_epang_input_reads(config),

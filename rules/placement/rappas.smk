@@ -78,7 +78,7 @@ rule db_build_rappas:
     version: "1.00"
     params:
         states=["nucl"] if config["states"]==0 else ["amino"],
-        ardir=config["workdir"]+"/RAPPAS/{pruning}/red{red}_ar{ar}/AR",
+        ardir=_working_dir+"/RAPPAS/{pruning}/red{red}_ar{ar}/AR",
         workdir=_rappas_experiment_dir,
         dbfilename="DB.bin",
         arbin=lambda wildcards: get_ar_binary(config, wildcards.ar)
@@ -120,9 +120,12 @@ rule placement_rappas:
                          "-w {params.workdir} " + \
                          "&> {log}"
         query_wildcard = "{wildcards.query}" if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD else "{wildcards.pruning}"
-        move_command = "mv {params.workdir}/placements_" + query_wildcard + "_r{wildcards.length}.fasta.jplace " + \
-                       "{params.workdir}/" + \
-                       query_wildcard + \
-                       "_r{wildcards.length}_k{wildcards.k}_o{wildcards.o}_red{wildcards.red}_ar{wildcards.ar}_rappas.jplace"
+
+        querystr = get_common_queryname_template(config).format(pruning=query_wildcard,
+                                                                length=wildcards.length)
+        move_command = (f"mv {params.workdir}/placements_{querystr}.fasta.jplace "
+                        f"{params.workdir}/{querystr}_k{wildcards.k}"
+                        f"_o{wildcards.o}_red{wildcards.red}"
+                        f"_ar{wildcards.ar}_rappas.jplace")
         pipeline = ";".join(_ for _ in [rappas_command, move_command])
         shell(pipeline)

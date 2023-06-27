@@ -24,7 +24,7 @@ rule plot_accuracy_results:
     log:
         os.path.join(_working_dir, "logs", "R", "accuracy_plots.log")
     params:
-        workdir=config["workdir"]
+        workdir=_working_dir
     shell:
         "Rscript --vanilla scripts/R/eval_accuracy_plots.R {input} {params.workdir} &> {log}"
 

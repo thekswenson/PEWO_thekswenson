@@ -11,25 +11,26 @@ from pewo.software import get_ar_binary
 from pewo.templates import get_ar_output_templates
 import pewo.config as cfg
 
+_work_dir = cfg.get_work_dir(config)
 
 rule compute_ar_inputs:
     """
     Prepares AR outputs using RAPPAS.
     """
     input:
-        a=config["workdir"]+"/A/{pruning}.align",
-        t=config["workdir"]+"/T/{pruning}.tree"
+        a=_work_dir+"/A/{pruning}.align",
+        t=_work_dir+"/T/{pruning}.tree"
     output:
-        config["workdir"]+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_align.fasta",
-        config["workdir"]+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_align.phylip",
-        config["workdir"]+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_tree_withBL.tree",
-        config["workdir"]+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_tree_withBL_withoutInterLabels.tree"
+        _work_dir+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_align.fasta",
+        _work_dir+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_align.phylip",
+        _work_dir+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_tree_withBL.tree",
+        _work_dir+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}/extended_trees/extended_tree_withBL_withoutInterLabels.tree"
     log:
-        config["workdir"]+"/logs/ar_inputs/{pruning}_red{reduction}_ar{arsoft}.log"
+        _work_dir+"/logs/ar_inputs/{pruning}_red{reduction}_ar{arsoft}.log"
     params:
         states = ["nucl"] if config["states"]==0 else ["amino"],
         reduc = config["config_rappas"]["reduction"],
-        workdir = config["workdir"]+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}",
+        workdir = _work_dir+"/RAPPAS/{pruning}/red{reduction}_ar{arsoft}",
         arbin = lambda wildcards: get_ar_binary(config, wildcards.arsoft)
     version: "1.00"
     shell:
@@ -40,16 +41,16 @@ rule compute_ar_inputs:
 
 rule ar_phyml:
     input:
-        a = config["workdir"]+"/RAPPAS/{pruning}/red{red}_arPHYML/extended_trees/extended_align.phylip",
-        t = config["workdir"]+"/RAPPAS/{pruning}/red{red}_arPHYML/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
-        s = config["workdir"]+"/T/{pruning}_optimised.info"
+        a = _work_dir+"/RAPPAS/{pruning}/red{red}_arPHYML/extended_trees/extended_align.phylip",
+        t = _work_dir+"/RAPPAS/{pruning}/red{red}_arPHYML/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
+        s = _work_dir+"/T/{pruning}_optimised.info"
     output: get_ar_output_templates(config, "PHYML")
     log:
-        config["workdir"]+"/logs/ar/{pruning}_red{red}_arPHYML.log"
+        _work_dir+"/logs/ar/{pruning}_red{red}_arPHYML.log"
     benchmark:
-        repeat(config["workdir"]+"/benchmarks/{pruning}_red{red}_arPHYML_ansrec_benchmark.tsv", config["repeats"])
+        repeat(_work_dir+"/benchmarks/{pruning}_red{red}_arPHYML_ansrec_benchmark.tsv", config["repeats"])
     params:
-        outname = os.path.join(cfg.get_work_dir(config), "RAPPAS", "{pruning}", "red{red}_arPHYML"),
+        outname = os.path.join(_work_dir, "RAPPAS", "{pruning}", "red{red}_arPHYML"),
         c = config["phylo_params"]["categories"],
     run:
         phylo_params = extract_params(input.s)  #launch 1 extract per pruning
@@ -83,17 +84,17 @@ rule ar_phyml:
 
 rule ar_raxmlng:
     input:
-        a=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arRAXMLNG/extended_trees/extended_align.phylip",
-        t=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arRAXMLNG/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
-        s=config["workdir"]+"/T/{pruning}_optimised.info"
+        a=_work_dir+"/RAPPAS/{pruning}/red{red}_arRAXMLNG/extended_trees/extended_align.phylip",
+        t=_work_dir+"/RAPPAS/{pruning}/red{red}_arRAXMLNG/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
+        s=_work_dir+"/T/{pruning}_optimised.info"
     output:
         get_ar_output_templates(config, "RAXMLNG")
     log:
-        config["workdir"]+"/logs/ar/{pruning}_red{red}_arRAXMLNG.log"
+        _work_dir+"/logs/ar/{pruning}_red{red}_arRAXMLNG.log"
     benchmark:
-        repeat(config["workdir"]+"/benchmarks/{pruning}_red{red}_arRAXMLNG_ansrec_benchmark.tsv", config["repeats"])
+        repeat(_work_dir+"/benchmarks/{pruning}_red{red}_arRAXMLNG_ansrec_benchmark.tsv", config["repeats"])
     params:
-        outname=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arRAXMLNG",
+        outname=_work_dir+"/RAPPAS/{pruning}/red{red}_arRAXMLNG",
         c=config["phylo_params"]["categories"],
     run:
         phylo_params=extract_params(input.s)  #launch 1 extract per pruning
@@ -118,17 +119,17 @@ rule ar_raxmlng:
 
 rule ar_paml:
     input:
-        a=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arPAML/extended_trees/extended_align.phylip",
-        t=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arPAML/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
-        s=config["workdir"]+"/T/{pruning}_optimised.info"
+        a=_work_dir+"/RAPPAS/{pruning}/red{red}_arPAML/extended_trees/extended_align.phylip",
+        t=_work_dir+"/RAPPAS/{pruning}/red{red}_arPAML/extended_trees/extended_tree_withBL_withoutInterLabels.tree",
+        s=_work_dir+"/T/{pruning}_optimised.info"
     output:
         get_ar_output_templates(config, "PAML")
     log:
-        config["workdir"]+"/logs/ar/{pruning}_red{red}_arPAML.log"
+        _work_dir+"/logs/ar/{pruning}_red{red}_arPAML.log"
     benchmark:
-        repeat(config["workdir"]+"/benchmarks/{pruning}_red{red}_arPAML_ansrec_benchmark.tsv", config["repeats"])
+        repeat(_work_dir+"/benchmarks/{pruning}_red{red}_arPAML_ansrec_benchmark.tsv", config["repeats"])
     params:
-        outname=config["workdir"]+"/RAPPAS/{pruning}/red{red}_arPAML",
+        outname=_work_dir+"/RAPPAS/{pruning}/red{red}_arPAML",
         c=config["phylo_params"]["categories"],
     run:
         arbin = get_ar_binary(config, "PAML")
