@@ -12,6 +12,10 @@ from typing import Any, Dict
 from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts
 
 
+class ReadGen(Enum):
+    ART = "ART",
+    PARTITION = "partition"
+
 class Mode(Enum):
     ACCURACY = 0,
     LIKELIHOOD = 1,
@@ -23,6 +27,19 @@ def get_work_dir(config: Dict) -> str:
     Returns working directory path. This is the root directory of PEWO output.
     """
     return config["workdir"]
+
+
+def get_read_generator(config: Dict) -> str:
+    """
+    Returns working directory path. This is the root directory of PEWO output.
+    """
+    if "read_generator" in config:
+        if not any(config["read_generator"] for val in ReadGen):
+            raise(RuntimeError(f"Uknown read generator: "
+                               f"{config['read_generator']}"))
+        return config["read_generator"]
+
+    return str(ReadGen.PARTITION)
 
 
 def is_supported(software: Any) -> bool:

@@ -7,7 +7,8 @@ __license__ = "MIT"
 
 
 import os
-from typing import Union, Any, Dict, List
+import re
+from typing import Union, Any, Dict, List, Pattern
 import pewo.config as cfg
 from pewo.software import Software, PlacementSoftware, AlignmentSoftware
 from pewo.io import fasta
@@ -98,13 +99,28 @@ def get_common_queryname_template(config: Dict) -> str:
     1) common arguments: tree and query sequences -- independent of software
     2) specific arguments: model params etc. -- depends on software used
 
-    This method creates an placement output filename template, based on the
-    first type of inputs, and is independent of placement software used.
+    This method creates a query filename template, based on the cfg.Mode and 
+    the read length.
+
+    Note that the format of this template should match ther regular expression
+    returned by get_common_queryname_re().
     """
 
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
-    return "{" + get_name_prefix(config) + "}_r{length}"
+    readtype = cfg.get_read_generator(config)
+    return "{" + get_name_prefix(config) + "}_" + readtype + "_r{length}"
+
+
+def get_common_queryname_re(config: Dict) -> Pattern:
+    """
+    A regular expression that matches the query name template returned by
+    get_common_queryname_template(). If this matches, then the first group
+    will be the "pruning" number, and the second will be the read length.
+    """
+    readtype = cfg.get_read_generator(config)
+    return re.compile(cfg.get_work_dir(config)+r"/R/(\d+)_" + readtype +
+                      r"_r(\d+)")
 
 
 def get_common_template_args(config: Dict) -> Dict[str, Any]:

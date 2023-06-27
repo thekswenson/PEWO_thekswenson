@@ -12,7 +12,8 @@ from pathlib import Path
 import pewo.config as cfg
 from pewo.software import PlacementSoftware, get_ar_binary
 from pewo.templates import get_output_template, get_log_template, get_experiment_dir_template, \
-    get_ar_output_templates, get_benchmark_template, get_output_template_args, get_experiment_log_dir_template
+    get_ar_output_templates, get_benchmark_template, get_output_template_args, get_experiment_log_dir_template, \
+    get_common_queryname_template
 
 
 _working_dir = cfg.get_work_dir(config)
@@ -43,7 +44,7 @@ def get_rappas_input_reads(pruning):
     """
     Creates a list of input reads files. For generated reads from a pruning,
     all read lengths are passed in a single RAPPAS execution.
-    Read lengths can not be wildcards and must be set manually
+    Read lengths cannot be wildcards and must be set manually
     """
     output_dir = os.path.join(_working_dir, "R")
 
@@ -52,10 +53,9 @@ def get_rappas_input_reads(pruning):
         return [os.path.join(output_dir, "{query}_r0.fasta")]
     # multiple reads per fasta
     else:
-        # FIXME:
-        # This is a dependency on pewo.templates.get_common_queryname_template result.
-        # Look for a decent way to get rid of it.
-        return [os.path.join(output_dir, pruning + "_r" + str(l) + ".fasta")
+        filename = f"{get_common_queryname_template(config)}.fasta"
+        return [os.path.join(output_dir,
+                             filename.format(pruning=pruning, length=l))
                 for l in config["read_length"]]
 
 

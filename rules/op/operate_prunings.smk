@@ -9,8 +9,9 @@ __license__ = "MIT"
 
 import os
 import pewo.config as cfg
+from pathlib import Path
 from typing import Dict
-
+from pewo.templates import get_common_queryname_template, get_common_queryname_re
 
 _work_dir = cfg.get_work_dir(config)
 
@@ -28,7 +29,9 @@ def get_pruning_output_read_files():
     """
     output_directory = os.path.join(_work_dir, "R")
 
-    return [os.path.join(output_directory, "{0}_r{1}.fasta".format(pruning, length))
+    filename = f"{get_common_queryname_template(config)}.fasta"
+    return [os.path.join(output_directory,
+                         filename.format(pruning=pruning, length=length))
             for pruning in range(config["pruning_count"])
             for length in config["read_length"]]
 
@@ -77,6 +80,18 @@ rule operate_pruning:
                 "{params.count} {params.length} 0 1 {params.states} "
                 "&> {log}"
             )
+                    #Rename the read files appropriately:
+            namere = get_common_queryname_re(config)
+            for readfile in get_pruning_output_read_files():
+                m = namere.match(readfile)
+                if m:
+                    prunnum, length = m.groups()
+                    assert length == params.length, f"bad length in {readfile}."
+                else:
+                    raise ValueError(f"Unexpected read file name {readfile}.")
+
+                Path(f"{params.wd}/R/{prunnum}_r{length}.fasta").rename(readfile)
+
         else:
             shell(
                 "mkdir -p {params.wd}/A {params.wd}/T {params.wd}/G {params.wd}/R;"
