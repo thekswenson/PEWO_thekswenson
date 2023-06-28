@@ -66,7 +66,7 @@ rule operate_pruning:
         "1.00"
     params:
         wd = _work_dir,
-        count = config["pruning_count"],
+        pcount = config["pruning_count"],
         states = config["states"],
         jar = config["pewo_jar"],
         length = get_params_length()
@@ -77,7 +77,7 @@ rule operate_pruning:
             shell(
                 "java -cp {params.jar} PrunedTreeGenerator_LITE "
                 "{params.wd} {input.a} {input.t} "
-                "{params.count} {params.length} 0 1 {params.states} "
+                "{params.pcount} {params.length} 0 1 {params.states} "
                 "&> {log}"
             )
                     #Rename the read files appropriately:
