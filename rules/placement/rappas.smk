@@ -47,13 +47,14 @@ def get_rappas_input_reads(pruning):
     Read lengths cannot be wildcards and must be set manually
     """
     output_dir = os.path.join(_working_dir, "R")
+    filename = get_common_queryname_template(config) + ".fasta"
 
-    # one read per fasta
-    if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
-        return [os.path.join(output_dir, "{query}_r0.fasta")]
     # multiple reads per fasta
+    if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
+        return [os.path.join(output_dir,
+                             filename.format(query="{query}", length=0))]
+    # one read per fasta
     else:
-        filename = f"{get_common_queryname_template(config)}.fasta"
         return [os.path.join(output_dir,
                              filename.format(pruning=pruning, length=l))
                 for l in config["read_length"]]
@@ -119,13 +120,17 @@ rule placement_rappas:
                          "-q {input.r} " + \
                          "-w {params.workdir} " + \
                          "&> {log}"
-        query_wildcard = "{wildcards.query}" if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD else "{wildcards.pruning}"
 
-        querystr = get_common_queryname_template(config).format(pruning=query_wildcard,
-                                                                length=wildcards.length)
+        if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
+            querystr = get_common_queryname_template(config).format(query=wildcards.query,
+                                                                    length=0)
+        else:
+            querystr = get_common_queryname_template(config).format(pruning=wildcards.pruning,
+                                                                    length=wildcards.length)
         move_command = (f"mv {params.workdir}/placements_{querystr}.fasta.jplace "
                         f"{params.workdir}/{querystr}_k{wildcards.k}"
                         f"_o{wildcards.o}_red{wildcards.red}"
                         f"_ar{wildcards.ar}_rappas.jplace")
+
         pipeline = ";".join(_ for _ in [rappas_command, move_command])
         shell(pipeline)

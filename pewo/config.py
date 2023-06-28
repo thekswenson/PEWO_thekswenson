@@ -41,7 +41,7 @@ def get_read_generator(config: Dict) -> str:
                                f"{config['read_generator']}"))
         return config["read_generator"]
 
-    return str(ReadGen.PARTITION)
+    return ReadGen.PARTITION.value
 
 
 def is_supported(software: Any) -> bool:

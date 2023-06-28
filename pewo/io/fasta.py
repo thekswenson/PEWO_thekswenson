@@ -8,7 +8,8 @@ __license__ = "MIT"
 
 import os
 from Bio import SeqIO
-from typing import List
+from typing import Dict, List
+import pewo.config as cfg
 
 
 def _seq_id_filter(id: str) -> str:
@@ -36,7 +37,8 @@ def _write_fasta(records: List[SeqIO.SeqRecord], filename: str) -> None:
         SeqIO.write(records, output, "fasta")
 
 
-def split_fasta(input_file: str, output_dir: str) -> List[str]:
+def split_fasta(input_file: str, output_dir: str,
+                nametemplate: str, mode: str) -> List[str]:
     """
     Splits the input .fasta file into multiple .fasta files,
     one sequence per file. Returns the list of resulting files.
@@ -48,8 +50,14 @@ def split_fasta(input_file: str, output_dir: str) -> List[str]:
         # By the convention, _r0 means "variable read length". Adding this
         # makes implicit dependency on the read file name convention in ALL rules
         # looking for read files: alignment_hmm, placement_rappas_dbinram etc.
-        output_file = os.path.join(output_dir,
-                                   _seq_id_filter(record.id) + "_r0" + ".fasta")
+        if mode == cfg.Mode.LIKELIHOOD:
+            filename = nametemplate.format(query=_seq_id_filter(record.id),
+                                           length=0)
+        else:
+            filename = nametemplate.format(pruning=_seq_id_filter(record.id),
+                                           length=0)
+
+        output_file = os.path.join(output_dir, filename)
         #print(output_file)
         _write_fasta([record], output_file)
         files.append(output_file)

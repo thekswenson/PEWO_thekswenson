@@ -24,7 +24,8 @@ def _get_appspam_input_sequences(config) -> List[str]:
     return os.path.join(_working_dir, "A", "{pruning}.align")
 
 def _get_appspam_input_queries(config) -> str:
-    return os.path.join(_working_dir, "R", "{pruning}_r{length}.fasta")
+    return os.path.join(_working_dir, "R",
+                        f"{get_common_queryname_template(config)}.fasta")
 
 def _get_appspam_input_tree() -> str:
     return os.path.join(_working_dir, "T", "{pruning}.tree")
