@@ -36,7 +36,6 @@ Test workflow before launch.
 ``` bash
 snakemake -np \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
@@ -44,16 +43,10 @@ Execute workflow, using 1 CPU core.
 ``` bash
 snakemake -p --cores 1 \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
 ## Comments
-
-In this example, `workdir` and `query_user` config flags are set
-dynamically, as it is required they are passed as absolute paths.
-You could also set them manually by editing the config.yaml file
-before launch.
 
 Raw results will be written in
 `examples/1_fast_test_of_accuracy_procedure/run`.

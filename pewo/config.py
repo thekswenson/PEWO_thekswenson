@@ -72,6 +72,16 @@ def get_mode(config: Dict) -> Mode:
     raise RuntimeError(f"PEWO mode not specified in the config file. See config.yaml for details")
 
 
+def get_query_user(config: Dict) -> str:
+    """
+    Returns if PEWO should generate reads from the input tree.
+    """
+    if "query_user" not in config:
+        return ''
+
+    return str(Path(config["query_user"]).resolve())
+
+
 def query_user(config: Dict) -> bool:
     """
     Returns if PEWO should generate reads from the input tree.

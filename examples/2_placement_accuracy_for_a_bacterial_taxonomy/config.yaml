@@ -9,8 +9,7 @@ dataset_align: examples/2_placement_accuracy_for_a_bacterial_taxonomy/alignment_
 dataset_tree: examples/2_placement_accuracy_for_a_bacterial_taxonomy/RAxML_bipartitions.150.BEST.WITH
 
 # working directory
-#MUST be an absolute path (some software do not accept relative path)
-workdir: /path/to/examples/2_placement_accuracy_for_a_bacterial_taxonomy/run
+workdir: examples/2_placement_accuracy_for_a_bacterial_taxonomy/run
 
 # states used in analysis, either '0' for nucleotides or '1' for amino acids
 states: 0
@@ -44,7 +43,6 @@ repeats: 1
 # simulate: queries are simulated from the input alignment (reserved for future upgrades, currently not implemented)
 query_type: user
 # queries used in resource evaluation, >10000 sequences recommended.
-# MUST be an absolute path (some software do not accept relative path).
 query_user: none
 
 

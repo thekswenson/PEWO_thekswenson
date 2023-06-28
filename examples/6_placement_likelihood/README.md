@@ -33,8 +33,6 @@ Test the workflow:
 ```
 snakemake -np \
 --snakefile eval_likelihood.smk \
---config workdir=`pwd`/examples/6_placement_likelihood/run \
-query_user=`pwd`/examples/6_placement_likelihood/EMP_92_studies_100.fas \
 --configfile examples/6_placement_likelihood/config.yaml
 ```
 
@@ -42,17 +40,10 @@ Execute workflow, using 2 CPU cores and 16Gb of RAM:
 ```
 snakemake -p --cores 2 --resources mem_mb=16000 \
 --snakefile eval_likelihood.smk \
---config workdir=`pwd`/examples/6_placement_likelihood/run \
-query_user=`pwd`/examples/6_placement_likelihood/EMP_92_studies_100.fas \
 --configfile examples/6_placement_likelihood/config.yaml
 ```
 
 ## Comments
-
-In this example, 'workdir' and 'query_user' config flags are set
-dynamically, as it is required they are passed as absolute paths.
-You could also set them manually by editing the config.yaml file
-before launch.
 
 Raw results will be written in 'examples/6_placement_likelihood/run'.
 

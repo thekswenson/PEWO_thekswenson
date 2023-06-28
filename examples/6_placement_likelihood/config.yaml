@@ -7,6 +7,9 @@ dataset_align: examples/6_placement_likelihood/alignment_652.fasta
 
 dataset_tree: examples/6_placement_likelihood/tree_652.nwk
 
+# working directory
+workdir: examples/6_placement_likelihood/run
+
 # states used in analysis, either '0' for nucleotides or '1' for amino acids
 states: 0
 
@@ -24,7 +27,6 @@ pruning_count: 0
 # simulate: queries are simulated from the input alignment (reserved for future upgrades, currently not implemented)
 query_type: user
 # queries used in resource evaluation, >10000 sequences recommended.
-# MUST be an absolute path (some software do not accept relative path).
 query_user: examples/6_placement_likelihood/EMP_92_studies_100.fas
 
 # The following section allow you to set parameters combinations that will be tested by the workflow

@@ -100,7 +100,7 @@ def get_common_queryname_template(config: Dict) -> str:
     2) specific arguments: model params etc. -- depends on software used
 
     This method creates a query filename template, based on the cfg.Mode and 
-    the read length.
+    the read length (e.g. "{pruning}_paritition_r{length}").
 
     Note that the format of this template should match ther regular expression
     returned by get_common_queryname_re().
@@ -138,7 +138,7 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
         return {
             "pruning": ["0"],
             "length": ["0"],
-            "query": fasta.get_sequence_ids(config["query_user"])
+            "query": fasta.get_sequence_ids(cfg.get_query_user(config))
         }
     else:
         return {

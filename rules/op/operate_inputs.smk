@@ -12,16 +12,17 @@ __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
 import os
-import pewo.config as cnf
+import pewo.config as cfg
+from pewo.templates import get_common_queryname_template
 
 
-_work_dir = cnf.get_work_dir(config)
+_work_dir = cfg.get_work_dir(config)
 
 # TODO: script of function to compute reads from alignment
 
 def queries():
     if config["query_type"]=="user":
-        return config["query_user"]
+        return cfg.get_query_user(config)
     else:
         #compute queries from alignment
         return ""
@@ -37,7 +38,7 @@ rule define_resource_inputs:
         aout=_work_dir+"/A/0.align",
         tout=_work_dir+"/T/0.tree",
         gout=_work_dir+"/G/0.fasta",
-        rout=_work_dir+"/R/0_r0.fasta"
+        rout=_work_dir+"/R/"+get_common_queryname_template(config).format(pruning=0, length=0)+".fasta"
     run:
         if not os.path.isdir(_work_dir):
             os.mkdir(_work_dir)

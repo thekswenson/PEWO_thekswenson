@@ -38,7 +38,6 @@ Test workflow before launch.
 ```
 snakemake -np \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/3_placement_accuracy_for_HIV_genomes/run \
 --configfile examples/3_placement_accuracy_for_HIV_genomes/config.yaml
 ```
 
@@ -46,16 +45,10 @@ Execute workflow, using 2 CPU cores and 8Gb of RAM.
 ```
 snakemake -p --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/3_placement_accuracy_for_HIV_genomes/run \
 --configfile examples/3_placement_accuracy_for_HIV_genomes/config.yaml
 ```
 
 ## Comments
-
-In this example, 'workdir' and 'query_user' config flags are set
-dynamically, as it is required they are passed as absolute paths.
-You could also set them manually by editing the config.yaml file
-before launch.
 
 Raw results will be written in
 'examples/3_placement_accuracy_for_HIV_genomes/run'.

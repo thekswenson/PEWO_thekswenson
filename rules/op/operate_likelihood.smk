@@ -71,7 +71,7 @@ rule split_queries:
     Splits input .fasta file into multiple fasta files.
     """
     input:
-        reads=config["query_user"]
+        reads=cfg.get_query_user(config)
     output:
         queries=expand(
             os.path.join(_work_dir, "R",
@@ -85,8 +85,8 @@ rule split_queries:
     run:
         output_directory = os.path.join(_work_dir, "R")
         nametemplate = get_common_queryname_template(config) + ".fasta"
-        fasta.split_fasta(config["query_user"], output_directory,
-                          nametemplate, cfg.get_mode(config))
+        fasta.split_fasta(cfg.get_query_user(config), output_directory,
+                          nametemplate)
 
 # WARNING!
 #

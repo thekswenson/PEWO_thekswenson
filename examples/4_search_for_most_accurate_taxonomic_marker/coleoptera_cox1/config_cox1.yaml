@@ -9,8 +9,7 @@ dataset_align: examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_c
 dataset_tree: examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cox1/cox1a_et_cox1b.fasta.raxml.tree_REROOTED_neuro.nwk
 
 # working directory
-#MUST be an absolute path (some software do not accept relative path)
-workdir: /path/to/examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cox1/run
+workdir: examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cox1/run
 
 # states used in analysis, either '0' for nucleotides or '1' for amino acids
 states: 0
@@ -44,7 +43,6 @@ repeats: 1
 # simulate: queries are simulated from the input alignment (reserved for future upgrades, currently not implemented)
 query_type: user
 # queries used in resource evaluation, >10000 sequences recommended.
-# MUST be an absolute path (some software do not accept relative path).
 query_user: none
 
 
