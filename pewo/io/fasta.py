@@ -7,9 +7,9 @@ __license__ = "MIT"
 
 
 import os
+from string import Formatter
 from Bio import SeqIO
-from typing import Dict, List
-import pewo.config as cfg
+from typing import List
 
 
 def _seq_id_filter(id: str) -> str:
@@ -38,24 +38,24 @@ def _write_fasta(records: List[SeqIO.SeqRecord], filename: str) -> None:
 
 
 def split_fasta(input_file: str, output_dir: str,
-                nametemplate: str, mode: str) -> List[str]:
+                nametemplate: str) -> List[str]:
     """
     Splits the input .fasta file into multiple .fasta files,
     one sequence per file. Returns the list of resulting files.
     """
     files = []
     for record in SeqIO.parse(input_file, "fasta"):
-
         #FIXME:
         # By the convention, _r0 means "variable read length". Adding this
         # makes implicit dependency on the read file name convention in ALL rules
         # looking for read files: alignment_hmm, placement_rappas_dbinram etc.
-        if mode == cfg.Mode.LIKELIHOOD:
-            filename = nametemplate.format(query=_seq_id_filter(record.id),
-                                           length=0)
-        else:
-            filename = nametemplate.format(pruning=_seq_id_filter(record.id),
-                                           length=0)
+
+            #Fill the in the name template with record id and 0 read length,
+            #no matter what the keyworkd arguments are:
+        keywords = [x[1] for x in Formatter().parse(nametemplate) if x[1]]
+        replace = {key: val for key, val in zip(keywords,
+                                                (_seq_id_filter(record.id), 0))}
+        filename = nametemplate.format(**replace)
 
         output_file = os.path.join(output_dir, filename)
         #print(output_file)
