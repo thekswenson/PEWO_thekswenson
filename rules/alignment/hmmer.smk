@@ -17,8 +17,11 @@ _work_dir = cfg.get_work_dir(config)
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 
 
-_hmmer_benchmark_align_template = get_benchmark_template(config, AlignmentSoftware.HMMER,
-                                                         p="pruning", length="length",
+_hmmer_benchmark_align_template = get_benchmark_template(config,
+                                                         AlignmentSoftware.HMMER,
+                                                         p="pruning",
+                                                         generator="generator",
+                                                         length="length",
                                                          rule_name="align") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 hmmer_benchmark_templates = [_hmmer_benchmark_align_template]
 hmmer_benchmark_template_args = [get_common_template_args(config)]

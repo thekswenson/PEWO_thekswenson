@@ -43,7 +43,7 @@ def get_experiment_dir_template(config: Dict, software: PlacementSoftware, **kwa
     software_dir = get_software_dir(config, software)
 
     # A subdirectory template for the given input set
-    input_set_dir_template = "{pruning}"
+    input_set_dir_template = "{pruning}_{generator}"
 
     if software == PlacementSoftware.EPA:
         return os.path.join(software_dir, input_set_dir_template, "g{g}")
@@ -108,8 +108,7 @@ def get_common_queryname_template(config: Dict) -> str:
 
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
-    readtype = cfg.get_read_generator(config)
-    return "{" + get_name_prefix(config) + "}_" + readtype + "_r{length}"
+    return "{" + get_name_prefix(config) + "}_{generator}_r{length}"
 
 
 def get_common_queryname_re(config: Dict) -> Pattern:
@@ -118,9 +117,7 @@ def get_common_queryname_re(config: Dict) -> Pattern:
     get_common_queryname_template(). If this matches, then the first group
     will be the "pruning" number, and the second will be the read length.
     """
-    readtype = cfg.get_read_generator(config)
-    return re.compile(cfg.get_work_dir(config)+r"/R/(\d+)_" + readtype +
-                      r"_r(\d+)")
+    return re.compile(cfg.get_work_dir(config)+r"/R/(\d+)_(\S+)_r(\d+)")
 
 
 def get_common_template_args(config: Dict) -> Dict[str, Any]:
@@ -137,12 +134,14 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
     if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
         return {
             "pruning": ["0"],
+            "generator": "likelihood",
             "length": ["0"],
             "query": fasta.get_sequence_ids(cfg.get_query_user(config))
         }
     else:
         return {
             "pruning": range(config["pruning_count"]),
+            "generator": cfg.get_read_generators(config),
             "length": config["read_length"]
         }
 
@@ -281,7 +280,7 @@ def join_kwargs(**kwargs) -> str:
     return "_".join(key + "{" + value + "}" for key, value in kwargs.items())
 
 
-def get_benchmark_template(config: Dict, software: Software, **kwargs) -> str:
+def get_benchmark_template(config: Dict, software: PlacementSoftware, **kwargs) -> str:
     """
     Creates a name template of .tsv output files produced by specific software.
     """

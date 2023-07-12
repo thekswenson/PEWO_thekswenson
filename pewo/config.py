@@ -8,13 +8,13 @@ __license__ = "MIT"
 
 
 from enum import Enum
-from typing import Any, Dict
+from typing import Any, Dict, List
 from pathlib import Path
 from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts
 
 
 class ReadGen(Enum):
-    ART = "ART",
+    ART = "ART"
     PARTITION = "partition"
 
 class Mode(Enum):
@@ -33,7 +33,7 @@ def get_work_dir(config: Dict) -> str:
 
 def get_read_generator(config: Dict) -> str:
     """
-    Returns working directory path. This is the root directory of PEWO output.
+    Returns the software used to generate reads (e.g. partition, ART, etc.).
     """
     if "read_generator" in config:
         if not any(config["read_generator"] for val in ReadGen):
@@ -42,6 +42,26 @@ def get_read_generator(config: Dict) -> str:
         return config["read_generator"]
 
     return ReadGen.PARTITION.value
+
+
+def get_read_generators(config: Dict) -> List[str]:
+    """
+    Creates a list of the read generator strings based on the config.
+    """
+        #Build the generator strings based on the config:
+    generators = []
+    for generator in config["read_generators"]:
+        genstr = generator
+        if generator == ReadGen.ART.value:
+            for platform in config["ART_gen"]["platform"]:
+                genstr += "-" + platform
+                if platform == "illumina":
+                    for sequencer in config["ART_gen"]["illum_sequencer"]:
+                        genstr += "-" + sequencer
+
+        generators.append(genstr)
+
+    return generators
 
 
 def is_supported(software: Any) -> bool:

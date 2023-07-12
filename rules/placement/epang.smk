@@ -20,17 +20,35 @@ _epang_soft_dir = get_software_dir(config, PlacementSoftware.EPANG)
 # FIXME: Unnecessary dependendancy on the alignment software
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 
-_epang_h1_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.EPANG,
-                                                            p="pruning", length="length", g="g", heuristic="h1",
+_epang_h1_place_benchmark_template = get_benchmark_template(config,
+                                                            PlacementSoftware.EPANG,
+                                                            p="pruning",
+                                                            generator="generator",
+                                                            length="length",
+                                                            g="g",
+                                                            heuristic="h1",
                                                             rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
-_epang_h2_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.EPANG,
-                                                            p="pruning", length="length", bigg="bigg", heuristic="h2",
+_epang_h2_place_benchmark_template = get_benchmark_template(config,
+                                                            PlacementSoftware.EPANG,
+                                                            p="pruning",
+                                                            generator="generator",
+                                                            length="length",
+                                                            bigg="bigg",
+                                                            heuristic="h2",
                                                             rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
-_epang_h3_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.EPANG,
-                                                            p="pruning", length="length", heuristic="h3",
+_epang_h3_place_benchmark_template = get_benchmark_template(config,
+                                                            PlacementSoftware.EPANG,
+                                                            p="pruning",
+                                                            generator="generator",
+                                                            length="length",
+                                                            heuristic="h3",
                                                             rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
-_epang_h4_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.EPANG,
-                                                            p="pruning", length="length", heuristic="h4",
+_epang_h4_place_benchmark_template = get_benchmark_template(config,
+                                                            PlacementSoftware.EPANG,
+                                                            p="pruning",
+                                                            generator="generator",
+                                                            length="length",
+                                                            heuristic="h4",
                                                             rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 epang_benchmark_templates = [

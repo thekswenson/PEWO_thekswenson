@@ -13,9 +13,14 @@ from pewo.templates import get_output_template, get_log_template, get_software_d
     get_common_queryname_template, get_benchmark_template, get_output_template_args
 
 _working_dir = cfg.get_work_dir(config)
-_appspam_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.APPSPAM,
-                                                          p="pruning", length="length", mode="mode", w="w", pattern="pattern",
-                                                          rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
+_appspam_place_benchmark_template = get_benchmark_template(config,
+                                                           PlacementSoftware.APPSPAM,
+                                                           p="pruning",
+                                                           generator="generator",
+                                                           length="length",
+                                                           mode="mode", w="w",
+                                                           pattern="pattern",
+                                                           rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 appspam_benchmark_templates = [_appspam_place_benchmark_template]
 appspam_benchmark_template_args = [get_output_template_args(config, PlacementSoftware.APPSPAM),]

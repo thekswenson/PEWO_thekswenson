@@ -83,10 +83,9 @@ rule split_queries:
     version:
         "1.00"
     run:
-        output_directory = os.path.join(_work_dir, "R")
         nametemplate = get_common_queryname_template(config) + ".fasta"
-        fasta.split_fasta(cfg.get_query_user(config), output_directory,
-                          nametemplate)
+        fasta.split_fasta(cfg.get_query_user(config),
+                          os.path.join(_work_dir, "R", nametemplate))
 
 # WARNING!
 #

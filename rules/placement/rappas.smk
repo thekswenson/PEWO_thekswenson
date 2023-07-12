@@ -21,11 +21,12 @@ _rappas_experiment_dir = get_experiment_dir_template(config, PlacementSoftware.R
 
 # Benchmark templates
 _rappas_build_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
-    p="pruning", k="k", o="o", red="red", ar="ar",
+    p="pruning", generator="generator", k="k", o="o", red="red", ar="ar",
     rule_name="dbbuild") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 _rappas_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
-    p="pruning", length="length", k="k", o="o", red="red", ar="ar",
+    p="pruning", generator="generator", length="length", k="k", o="o", red="red", ar="ar",
     rule_name="placement")  if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
+#print(f'_rappas_place_benchmark_template:\n{_rappas_place_benchmark_template}')
 
 rappas_benchmark_templates = [_rappas_build_benchmark_template, _rappas_place_benchmark_template]
 
@@ -40,23 +41,23 @@ rappas_benchmark_template_args = [
 ]
 
 
-def get_rappas_input_reads(pruning):
+def get_rappas_input_reads(wildcards):
     """
     Creates a list of input reads files. For generated reads from a pruning,
     all read lengths are passed in a single RAPPAS execution.
     Read lengths cannot be wildcards and must be set manually
     """
-    output_dir = os.path.join(_working_dir, "R")
-    filename = get_common_queryname_template(config) + ".fasta"
+    filename = os.path.join(_working_dir, "R",
+                            get_common_queryname_template(config) + ".fasta")
 
     # multiple reads per fasta
     if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
-        return [os.path.join(output_dir,
-                             filename.format(query="{query}", length=0))]
+        return [filename.format(length=0)]
     # one read per fasta
     else:
-        return [os.path.join(output_dir,
-                             filename.format(pruning=pruning, length=l))
+        return [filename.format(pruning=wildcards.pruning,
+                                generator=wildcards.generator,
+                                length=l)
                 for l in config["read_length"]]
 
 
@@ -73,7 +74,7 @@ rule db_build_rappas:
         database = os.path.join(_rappas_experiment_dir, "DB.bin")
     log:
         os.path.join(get_experiment_log_dir_template(config, PlacementSoftware.RAPPAS),
-                     "k{k}_o{o}_red{red}_ar{ar}.log")
+                     "g{generator}_k{k}_o{o}_red{red}_ar{ar}.log")
     benchmark:
         repeat(_rappas_build_benchmark_template, config["repeats"])
     version: "1.00"
@@ -95,7 +96,7 @@ rule db_build_rappas:
 rule placement_rappas:
     input:
         database = os.path.join(_rappas_experiment_dir, "DB.bin"),
-        r = lambda wildcards: get_rappas_input_reads(wildcards.pruning),
+        r = get_rappas_input_reads,
     output:
         jplace = get_output_template(config, PlacementSoftware.RAPPAS, "jplace")
     log:
@@ -123,9 +124,11 @@ rule placement_rappas:
 
         if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
             querystr = get_common_queryname_template(config).format(query=wildcards.query,
+                                                                    generator=wildcards.generator,
                                                                     length=0)
         else:
             querystr = get_common_queryname_template(config).format(pruning=wildcards.pruning,
+                                                                    generator=wildcards.generator,
                                                                     length=wildcards.length)
         move_command = (f"mv {params.workdir}/placements_{querystr}.fasta.jplace "
                         f"{params.workdir}/{querystr}_k{wildcards.k}"

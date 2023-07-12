@@ -25,7 +25,7 @@ def queries():
         return cfg.get_query_user(config)
     else:
         #compute queries from alignment
-        return ""
+        return []
 
 
 
@@ -38,7 +38,9 @@ rule define_resource_inputs:
         aout=_work_dir+"/A/0.align",
         tout=_work_dir+"/T/0.tree",
         gout=_work_dir+"/G/0.fasta",
-        rout=_work_dir+"/R/"+get_common_queryname_template(config).format(pruning=0, length=0)+".fasta"
+        rout=_work_dir+"/R/"+get_common_queryname_template(config).format(pruning=0,
+                                                                          generator="resources",
+                                                                          length=0)+".fasta"
     run:
         if not os.path.isdir(_work_dir):
             os.mkdir(_work_dir)

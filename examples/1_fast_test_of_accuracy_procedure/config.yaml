@@ -28,6 +28,23 @@ read_length: [150]
 
 # number of random prunings to compute
 pruning_count: 2
+# Type of read generators to use, at least one of {partition, ART}
+read_generators: [partition, ART]
+
+
+
+## IF "ART" IS USED TO GENERATE READS
+#############################
+### this section matters read_generators has ART in it
+ART_gen:
+
+  # The number of reads per pruned leaf
+  reps: 10
+  # The type of reads to generate, at least one of {illumina}
+  platform: [illumina]
+  # The sequencing system (see `art_illumina -h`)
+  # {GA1, GA2, HS10, HS20, HS25, HSXn, HSXt, MinS, MSv1, MSv3, NS50}
+  illum_sequencer: [HS25]
 
 
 ## IF "RESOURCES" ARE EVALUATED

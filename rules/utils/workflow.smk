@@ -14,6 +14,8 @@ from pewo.software import AlignmentSoftware, PlacementSoftware
 from pewo.templates import get_software_dir, get_common_queryname_template, get_common_template_args, \
     get_output_template, get_output_template_args
 
+from pprint import pprint
+
 _work_dir = cfg.get_work_dir(config)
 
 def get_accuracy_nd_plots() -> List[str]:
@@ -106,6 +108,7 @@ def build_resources_workflow() -> List[str]:
     l.append(_work_dir + "/T/0.tree")
     l.append(_work_dir + "/G/0.fasta")
     filename = get_common_queryname_template(config).format(pruning=0,
+                                                            generator="resources",
                                                             length=0)+".fasta"
     l.append(_work_dir + "/R/" + filename)
 
@@ -257,3 +260,20 @@ def build_benchmarks_workflow() -> List[str]:
     Defines expected benchmark outputs, which are written by snakemake in workdir/benchmarks
     """
     return get_resources_tsv(config)
+
+
+def get_read_files() -> List[str]:
+    """
+    Creates a list of output read files.
+    """
+    filename = os.path.join(_work_dir, "R",
+                            f"{get_common_queryname_template(config)}.fasta")
+
+    return expand(filename, **get_common_template_args(config))
+
+
+def build_reads_workflow() -> List[str]:
+    """
+    Defines expected reads outputs.
+    """
+    return get_read_files()

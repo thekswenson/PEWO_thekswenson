@@ -24,9 +24,14 @@ _pplacer_experiment_dir = get_experiment_dir_template(config, PlacementSoftware.
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 
 
-_pplacer_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.PPLACER,
-                                                           p="pruning", length="length", ms="ms",
-                                                           sb="sb", mp="mp", rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
+_pplacer_place_benchmark_template = get_benchmark_template(config,
+                                                           PlacementSoftware.PPLACER,
+                                                           p="pruning",
+                                                           generator="generator",
+                                                           length="length",
+                                                           ms="ms",
+                                                           sb="sb", mp="mp",
+                                                           rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 pplacer_benchmark_templates = [_pplacer_place_benchmark_template]
 pplacer_benchmark_template_args = [get_output_template_args(config, PlacementSoftware.PPLACER)]

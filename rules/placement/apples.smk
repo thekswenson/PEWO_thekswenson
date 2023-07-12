@@ -16,8 +16,13 @@ from pewo.templates import get_output_template, get_log_template, get_software_d
 _working_dir = cfg.get_work_dir(config)
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 
-_apples_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.APPLES,
-                                                          p="pruning", length="length", meth="meth", crit="crit",
+_apples_place_benchmark_template = get_benchmark_template(config,
+                                                          PlacementSoftware.APPLES,
+                                                          p="pruning",
+                                                          generator="generator",
+                                                          length="length",
+                                                          meth="meth",
+                                                          crit="crit",
                                                           rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 apples_benchmark_templates = [_apples_place_benchmark_template]

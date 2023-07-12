@@ -37,8 +37,7 @@ def _write_fasta(records: List[SeqIO.SeqRecord], filename: str) -> None:
         SeqIO.write(records, output, "fasta")
 
 
-def split_fasta(input_file: str, output_dir: str,
-                nametemplate: str) -> List[str]:
+def split_fasta(input_file: str, nametemplate: str) -> List[str]:
     """
     Splits the input .fasta file into multiple .fasta files,
     one sequence per file. Returns the list of resulting files.
@@ -57,9 +56,7 @@ def split_fasta(input_file: str, output_dir: str,
                                                 (_seq_id_filter(record.id), 0))}
         filename = nametemplate.format(**replace)
 
-        output_file = os.path.join(output_dir, filename)
-        #print(output_file)
-        _write_fasta([record], output_file)
-        files.append(output_file)
+        _write_fasta([record], filename)
+        files.append(filename)
 
     return files

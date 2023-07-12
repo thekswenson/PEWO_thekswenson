@@ -8,13 +8,17 @@ __license__ = "MIT"
 # TODO: keep or remove read length sd ?
 
 import os
-import pewo.config as cfg
+import glob
 from pathlib import Path
 from typing import Dict
-from pewo.templates import get_common_queryname_template, get_common_queryname_re
+from Bio import SeqIO
+import pewo.config as cfg
+from pewo.templates import get_common_queryname_template
+from pewo.io.fasta import split_fasta
 
 _work_dir = cfg.get_work_dir(config)
 
+_READS_TMPPREF = Path("generated_reads")
 
 def get_input_reads():
     """
@@ -27,11 +31,8 @@ def get_pruning_output_read_files():
     """
     Creates a list of output read files.
     """
-    output_directory = os.path.join(_work_dir, "R")
-
-    filename = f"{get_common_queryname_template(config)}.fasta"
-    return [os.path.join(output_directory,
-                         filename.format(pruning=pruning, length=length))
+    return [os.path.join(_work_dir, "R",
+                         "{0}_r{1}.fasta".format(pruning, length))
             for pruning in range(config["pruning_count"])
             for length in config["read_length"]]
 
@@ -49,12 +50,12 @@ def get_params_length():
 
 rule operate_pruning:
     """
-    Runs PrunedTreeGenerator to creates prunings.
+    Runs PrunedTreeGenerator to create prunings.
     """
     input:
         a = config["dataset_align"],
         t = config["dataset_tree"],
-        r = get_input_reads()
+        #r = get_input_reads()
     output:
         a = expand(_work_dir + "/A/{pruning}.align", pruning=range(config["pruning_count"])),
         t = expand(_work_dir + "/T/{pruning}.tree", pruning=range(config["pruning_count"])),
@@ -80,18 +81,6 @@ rule operate_pruning:
                 "{params.pcount} {params.length} 0 1 {params.states} "
                 "&> {log}"
             )
-                    #Rename the read files appropriately:
-            namere = get_common_queryname_re(config)
-            for readfile in get_pruning_output_read_files():
-                m = namere.match(readfile)
-                if m:
-                    prunnum, length = m.groups()
-                    assert length == params.length, f"bad length in {readfile}."
-                else:
-                    raise ValueError(f"Unexpected read file name {readfile}.")
-
-                Path(f"{params.wd}/R/{prunnum}_r{length}.fasta").rename(readfile)
-
         else:
             shell(
                 "mkdir -p {params.wd}/A {params.wd}/T {params.wd}/G {params.wd}/R;"
@@ -99,3 +88,63 @@ rule operate_pruning:
                 "cp {input.t} {params.wd}/T/0.tree;"
                 "touch {params.wd}/G/0.fasta;"
             )
+
+
+ruleorder: rename_PrunedTreeGenerator_reads > simulate_ART_reads
+
+
+rule rename_PrunedTreeGenerator_reads:
+    """
+    PrunedTreeGenerator creates files with names hardcoded based on the
+    read length (e.g. 0_r150.fasta).  We convert them to names expected
+    by the snakemake workflow (e.g. 0_partition_r150.fasta).
+    """
+    input:
+        "{d}/{counter}_r{length}.fasta"
+
+    output:
+        "{d}/{counter}_partition_r{length}.fasta"
+
+    shell:
+        "mv {input} {output}"
+
+
+rule simulate_ART_reads:
+    """
+    This uses simulation tools to generate ART reads, rather than
+    paritioning the leaf sequences as done in by the PrunedTreeGenerator.
+    """
+    input:
+        _work_dir + "/G/{pruning}.fasta"
+
+    output:
+        _work_dir + "/R/{pruning}_ART-{platform}-{sequencer}_r{length}.fasta"
+
+    log:
+        _work_dir + "/logs/read_simulation/{pruning}_ART-{platform}-{sequencer}_r{length}.log"
+
+    params:
+        wd = _work_dir,
+        reps = config["ART_gen"]["reps"],
+        length = get_params_length()
+
+    run:
+        out_dir = Path(params.wd, "R")
+        tmp_pref = str(out_dir / _READS_TMPPREF)
+        tmp_pref += (f"{wildcards.pruning}_ART-{wildcards.platform}-"
+                     f"{wildcards.sequencer}_r{wildcards.length}")
+        if wildcards.platform == "illumina":
+            shell(
+                "art_illumina -na -sam -ss {wildcards.sequencer} -i {input} "
+                "-l {params.length} -c {params.reps} -o {tmp_pref} "
+                " &> {log}"
+            )
+        else:
+            raise(ValueError(f"Unexpected platform specifier: "
+                             f'"{wilcards.platform}".'))
+
+        seqs = SeqIO.parse(tmp_pref + '.fq', format='fastq')
+        SeqIO.write(seqs, output[0], format='fasta')
+
+        for filename in glob.glob(f"{tmp_pref}*"):
+            os.remove(filename) 
