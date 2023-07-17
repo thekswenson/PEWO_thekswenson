@@ -36,7 +36,8 @@ def get_experiment_dir_template(config: Dict, software: PlacementSoftware, **kwa
     """
     Returns a name template of a working directory path for an experiment.
     One experiment is conducted by given software with fixed specific
-    software parameters and a fixed input set (i.e. phylogenetic tree and alignment).
+    software parameters and a fixed input set (i.e. phylogenetic tree, reads,
+    and alignment).
     """
     _check_software(software)
 

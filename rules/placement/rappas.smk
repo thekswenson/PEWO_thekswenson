@@ -18,6 +18,9 @@ from pewo.templates import get_output_template, get_log_template, get_experiment
 
 _working_dir = cfg.get_work_dir(config)
 _rappas_experiment_dir = get_experiment_dir_template(config, PlacementSoftware.RAPPAS)
+#_rappas_db_dir = os.path.join(get_software_dir(config, PlacementSoftware.RAPPAS), "{pruning}",
+#                              "red{red}_ar{ar}", "k{k}_o{o}")
+
 
 # Benchmark templates
 _rappas_build_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
@@ -72,9 +75,10 @@ rule db_build_rappas:
         ar = lambda wildcards: get_ar_output_templates(config, wildcards.ar)
     output:
         database = os.path.join(_rappas_experiment_dir, "DB.bin")
+        #database = os.path.join(_rappas_db_dir, "DB.bin")
     log:
         os.path.join(get_experiment_log_dir_template(config, PlacementSoftware.RAPPAS),
-                     "g{generator}_k{k}_o{o}_red{red}_ar{ar}.log")
+                     "{generator}_k{k}_o{o}_red{red}_ar{ar}.log")
     benchmark:
         repeat(_rappas_build_benchmark_template, config["repeats"])
     version: "1.00"
@@ -82,6 +86,7 @@ rule db_build_rappas:
         states=["nucl"] if config["states"]==0 else ["amino"],
         ardir=_working_dir+"/RAPPAS/{pruning}/red{red}_ar{ar}/AR",
         workdir=_rappas_experiment_dir,
+        #workdir=_rappas_db_dir,
         dbfilename="DB.bin",
         arbin=lambda wildcards: get_ar_binary(config, wildcards.ar)
     run:
@@ -96,6 +101,7 @@ rule db_build_rappas:
 rule placement_rappas:
     input:
         database = os.path.join(_rappas_experiment_dir, "DB.bin"),
+        #database = os.path.join(_rappas_db_dir, "DB.bin"),
         r = get_rappas_input_reads,
     output:
         jplace = get_output_template(config, PlacementSoftware.RAPPAS, "jplace")

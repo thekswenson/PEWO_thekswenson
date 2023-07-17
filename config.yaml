@@ -10,39 +10,39 @@
 # PAC
 
 # D140 (amino acids)
-#dataset_align: /home/nikolai/dev/rappas/data/test/D140/140.phy.fasta
-#dataset_tree: /home/nikolai/dev/rappas/data/test/D140/RAxML_bipartitions.140.BEST.WITH
+#dataset_align: dev/rappas/data/test/D140/140.phy.fasta
+#dataset_tree: dev/rappas/data/test/D140/RAxML_bipartitions.140.BEST.WITH
 
 # D155 (full virus genome, 9k positions, 2% gap rate
-#dataset_align: /home/nikolai/dev/rappas/data/test/D155/reference.fasta
-#dataset_tree: /home/nikolai/dev/rappas/data/test/D155/tree.newick
+#dataset_align: dev/rappas/data/test/D155/reference.fasta
+#dataset_tree: dev/rappas/data/test/D155/tree.newick
 
 # D218
-#dataset_align: /home/nikolai/dev/rappas/data/test/D218/reference.fasta
-#dataset_tree: /home/nikolai/dev/rappas/data/test/D218/tree.newick
+#dataset_align: dev/rappas/data/test/D218/reference.fasta
+#dataset_tree: dev/rappas/data/test/D218/tree.newick
 
 # D500
-#dataset_align: /home/nikolai/dev/rappas/data/DATASETS/EPA_datasets/500.phy.fasta
-#dataset_tree: /home/nikolai/dev/rappas/data/DATASETS/EPA_datasets/RAxML_result.optimization500
+#dataset_align: dev/rappas/data/DATASETS/EPA_datasets/500.phy.fasta
+#dataset_tree: dev/rappas/data/DATASETS/EPA_datasets/RAxML_result.optimization500
 
 # D652
-#dataset_align: /home/nikolai/dev/rappas/data/test/D652/bv_refs_aln_stripped_99.5.fasta
-#dataset_tree: /home/nikolai/dev/rappas/data/test/D652/RAxML_result.bv_refs_aln
+#dataset_align: dev/rappas/data/test/D652/bv_refs_aln_stripped_99.5.fasta
+#dataset_tree: dev/rappas/data/test/D652/RAxML_result.bv_refs_aln
 
 # LAC
-dataset_align: /home/nikolai/dev/test/D652
-dataset_tree: /home/nikolai/dev/rappas/data/test/D652/RAxML_result.bv_refs_aln
+dataset_align: dev/test/D652
+dataset_tree: dev/rappas/data/test/D652/RAxML_result.bv_refs_aln
 
 
 #working directory
-#workdir: /home/nikolai/dev/pewo/D140
-#workdir: /home/nikolai/dev/pewo/D218
-#workdir: /home/nikolai/dev/pewo/D500
-#workdir: /home/nikolai/dev/pewo/D652
-#workdir: /home/nikolai/dev/pewo/bernoulli_500
-#workdir: /home/nikolai/dev/pewo/bernoulli_652
-#workdir: /home/nikolai/dev/pewo/bernoulli_155
-#workdir: /home/nikolai/dev/pewo/debug_filters/D652/
+#workdir: dev/pewo/D140
+#workdir: dev/pewo/D218
+#workdir: dev/pewo/D500
+#workdir: dev/pewo/D652
+#workdir: dev/pewo/bernoulli_500
+#workdir: dev/pewo/bernoulli_652
+#workdir: dev/pewo/bernoulli_155
+#workdir: dev/pewo/debug_filters/D652/
 
 
 
@@ -54,16 +54,31 @@ states: 0
 #test_soft: [epa, rappas, rappas2]
 test_soft: [epa, rappas2]
 
-# READ GENERATION
-# Read lengths to generate
-read_length: [300]
-# Number of random prunings to compute
-pruning_count: 25
-
 
 ## IF "ACCURACY" IS EVALUATED
 #############################
 ### this section matters only when you run the "eval_accuracy.smk" workflow
+
+# Read lengths to generate
+read_length: [300]
+# Number of random prunings to compute
+pruning_count: 25
+# Type of read generators to use, at least one of {PARTITION, ART}
+read_generators: [PARTITION]
+
+
+## IF "ART" IS USED TO GENERATE READS
+### this subsection matters read_generators has ART in it
+ART_gen:
+
+  # The number of reads per pruned leaf
+  reps: 10
+  # The type of reads to generate, at least one of {ILLUMINA}
+  company: [ILLUMINA]
+  # The sequencing system (see `art_illumina -h`)
+  # {GA1, GA2, HS10, HS20, HS25, HSXN, HSXT, MINS, MSV1, MSV3, NS50}
+  illum_platform: [HS25]
+
 
 
 ## IF "RESOURCES" ARE EVALUATED

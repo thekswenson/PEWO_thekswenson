@@ -96,17 +96,37 @@ ruleorder: rename_PrunedTreeGenerator_reads > simulate_ART_reads
 rule rename_PrunedTreeGenerator_reads:
     """
     PrunedTreeGenerator creates files with names hardcoded based on the
-    read length (e.g. 0_r150.fasta).  We convert them to names expected
-    by the snakemake workflow (e.g. 0_partition_r150.fasta).
+    read length (e.g. 0_r150.fasta).  This rule renames them to those expected
+    by the snakemake workflow (e.g. 0_rgenPARTITION_r150.fasta).
     """
     input:
         "{d}/{counter}_r{length}.fasta"
 
     output:
-        "{d}/{counter}_partition_r{length}.fasta"
+        "{d}/{counter}_rgen" + cfg.ReadGen.PARTITION.value + "_r{length}.fasta"
 
     shell:
         "mv {input} {output}"
+
+
+paramre = re.compile(r"([a-z]+)([A-Z,\d]+)$")
+def getSubParameters(paramstr):
+    """
+    Creates a dictionary of subparameters from a string delimited by '-'.
+    Each paramter has a lowercase name and and uppercase value.
+    """
+    retval = {}
+    params = paramstr.split("-")
+    for param in params:
+        m = paramre.match(param)
+        if m:
+            retval[m.group(1)] = m.group(2)
+        else:
+            raise(ValueError(f"Expected all lowercase before all uppercase in "
+                             f"(sub)parameter format: "
+                             f'"{param}" in "{paramstr}".'))
+
+    return retval
 
 
 rule simulate_ART_reads:
@@ -118,10 +138,10 @@ rule simulate_ART_reads:
         _work_dir + "/G/{pruning}.fasta"
 
     output:
-        _work_dir + "/R/{pruning}_ART-{platform}-{sequencer}_r{length}.fasta"
+        _work_dir + "/R/{pruning}_rgen" + cfg.ReadGen.ART.value +"-{parameters}_r{length}.fasta"
 
     log:
-        _work_dir + "/logs/read_simulation/{pruning}_ART-{platform}-{sequencer}_r{length}.log"
+        _work_dir + "/logs/read_simulation/{pruning}_rgen" + cfg.ReadGen.ART.value + "ART-{parameters}_r{length}.log"
 
     params:
         wd = _work_dir,
@@ -129,19 +149,25 @@ rule simulate_ART_reads:
         length = get_params_length()
 
     run:
+        subparams = getSubParameters(wildcards.parameters)
+
         out_dir = Path(params.wd, "R")
         tmp_pref = str(out_dir / _READS_TMPPREF)
-        tmp_pref += (f"{wildcards.pruning}_ART-{wildcards.platform}-"
-                     f"{wildcards.sequencer}_r{wildcards.length}")
-        if wildcards.platform == "illumina":
+
+        if subparams["co"] == "ILLUMINA":
+            platform = cfg.ILLUM_PL[subparams["pl"]]
+
+            tmp_pref += (f"{wildcards.pruning}_rgen{cfg.ReadGen.ART.value}"
+                         f"-co{subparams['co']}-pl{subparams['pl']}"
+                         f"_r{wildcards.length}")
             shell(
-                "art_illumina -na -sam -ss {wildcards.sequencer} -i {input} "
-                "-l {params.length} -c {params.reps} -o {tmp_pref} "
+                "art_illumina -na -sam -ss {platform} -i {input} "
+                "-l {wildcards.length} -c {params.reps} -o {tmp_pref} "
                 " &> {log}"
             )
         else:
-            raise(ValueError(f"Unexpected platform specifier: "
-                             f'"{wilcards.platform}".'))
+            raise(ValueError(f"Unexpected company specifier: "
+                             f'"{wilcards.company}".'))
 
         seqs = SeqIO.parse(tmp_pref + '.fq', format='fastq')
         SeqIO.write(seqs, output[0], format='fasta')

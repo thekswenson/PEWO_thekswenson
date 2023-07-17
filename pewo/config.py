@@ -13,15 +13,30 @@ from pathlib import Path
 from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts
 
 
-class ReadGen(Enum):
-    ART = "ART"
-    PARTITION = "partition"
-
 class Mode(Enum):
     ACCURACY = 0,
     LIKELIHOOD = 1,
     RESOURCES = 2
 
+class ReadGen(Enum):
+    """
+    The config file strings related to the read generators.
+    """
+    ART = "ART"
+    PARTITION = "PARTITION"
+
+    #Illumina specific all-caps platform names mapped to ART's platform names:
+ILLUM_PL = {"GA1": "GA1",
+            "GA2": "GA2",
+            "HS10": "HS10",
+            "HS20": "HS20",
+            "HS25": "HS25",
+            "HSXN": "HSXn",
+            "HSXT": "HSXt",
+            "MINS": "MinS",
+            "MSV1": "MSv1",
+            "MSV3": "MSv3",
+            "NS50": "NS50"}
 
 def get_work_dir(config: Dict) -> str:
     """
@@ -33,7 +48,7 @@ def get_work_dir(config: Dict) -> str:
 
 def get_read_generator(config: Dict) -> str:
     """
-    Returns the software used to generate reads (e.g. partition, ART, etc.).
+    Returns the software used to generate reads (e.g. PARTITION, ART, etc.).
     """
     if "read_generator" in config:
         if not any(config["read_generator"] for val in ReadGen):
@@ -48,18 +63,23 @@ def get_read_generators(config: Dict) -> List[str]:
     """
     Creates a list of the read generator strings based on the config.
     """
-        #Build the generator strings based on the config:
     generators = []
     for generator in config["read_generators"]:
-        genstr = generator
+        genstr = "rgen" + generator.upper()
         if generator == ReadGen.ART.value:
-            for platform in config["ART_gen"]["platform"]:
-                genstr += "-" + platform
-                if platform == "illumina":
-                    for sequencer in config["ART_gen"]["illum_sequencer"]:
-                        genstr += "-" + sequencer
+            for company in config["ART_gen"]["company"]:
+                genstr += "-co" + company.upper()
+                if company == "ILLUMINA":
+                    for platform in config["ART_gen"]["illum_platform"]:
+                        generators.append(genstr + "-pl" + platform.upper())
+                else:
+                    raise(RuntimeError(f"Unknown ART company: {company}"))
 
-        generators.append(genstr)
+        elif generator == ReadGen.PARTITION.value:
+            generators.append(genstr)
+
+        else:
+            raise(RuntimeError(f"Unknown read generator: {generator}"))
 
     return generators
 
