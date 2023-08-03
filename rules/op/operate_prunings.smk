@@ -76,7 +76,7 @@ rule operate_pruning:
     run:
         if _generate_reads(config):
             shell(
-                "java -cp {params.jar} PrunedTreeGenerator_LITE "
+                "java -cp {params.jar} PrunedTreeGenerator "
                 "{params.wd} {input.a} {input.t} "
                 "{params.pcount} {params.length} 0 1 {params.states} "
                 "&> {log}"
