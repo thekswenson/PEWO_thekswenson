@@ -1,4 +1,4 @@
-# PEWO demo n°1
+# PEWO demo n°3
 
 ## Overview
 
@@ -36,14 +36,14 @@ conda activate PEWO
 
 Test workflow before launch.
 ```
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/3_placement_accuracy_for_HIV_genomes/config.yaml
 ```
 
 Execute workflow, using 2 CPU cores and 8Gb of RAM.
 ```
-snakemake -p --cores 2 --resources mem_mb=8000 \
+snakemake --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
 --configfile examples/3_placement_accuracy_for_HIV_genomes/config.yaml
 ```

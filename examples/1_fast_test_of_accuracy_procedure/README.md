@@ -34,14 +34,14 @@ conda activate PEWO
 
 Test workflow before launch.
 ``` bash
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
 Execute workflow, using 1 CPU core.
 ``` bash
-snakemake -p --cores 1 \
+snakemake --cores 1 \
 --snakefile eval_accuracy.smk \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```

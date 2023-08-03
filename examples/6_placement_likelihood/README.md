@@ -31,14 +31,14 @@ conda activate PEWO
 
 Test the workflow:
 ```
-snakemake -np \
+snakemake -n \
 --snakefile eval_likelihood.smk \
 --configfile examples/6_placement_likelihood/config.yaml
 ```
 
 Execute workflow, using 2 CPU cores and 16Gb of RAM:
 ```
-snakemake -p --cores 2 --resources mem_mb=16000 \
+snakemake --cores 2 --resources mem_mb=16000 \
 --snakefile eval_likelihood.smk \
 --configfile examples/6_placement_likelihood/config.yaml
 ```

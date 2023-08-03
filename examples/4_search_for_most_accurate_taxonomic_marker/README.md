@@ -1,4 +1,4 @@
-# PEWO demo n°2
+# PEWO demo n°4
 
 ## Overview
 
@@ -42,47 +42,47 @@ conda activate PEWO
 
 Test workflow before launch.
 ```
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_12S/config_12S.yaml
 
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_16S/config_16S.yaml
 
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cox1/config_cox1.yaml
 
-snakemake -np \
+snakemake -n \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cob/config_cob.yaml
 ```
 
 Execute workflow for 12S gene, using 2 CPU cores and 8Gb of RAM.
 ```
-snakemake -p --cores 2 --resources mem_mb=8000 \
+snakemake --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_12S/config_12S.yaml
 ```
 
 Execute workflow for 16S gene, using 2 CPU cores and 8Gb of RAM.
 ```
-snakemake -p --cores 2 --resources mem_mb=8000 \
+snakemake --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_16S/config_16S.yaml
 ```
 
 Execute workflow for cox1 gene, using 2 CPU cores and 8Gb of RAM.
 ```
-snakemake -p --cores 2 --resources mem_mb=8000 \
+snakemake --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cox1/config_cox1.yaml
 ```
 
 Execute workflow for cytb gene, using 2 CPU cores and 8Gb of RAM.
 ```
-snakemake -p --cores 2 --resources mem_mb=8000 \
+snakemake --cores 2 --resources mem_mb=8000 \
 --snakefile eval_accuracy.smk \
 --configfile examples/4_search_for_most_accurate_taxonomic_marker/coleoptera_cob/config_cob.yaml
 ```
