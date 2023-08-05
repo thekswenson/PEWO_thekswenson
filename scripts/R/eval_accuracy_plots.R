@@ -169,6 +169,7 @@ analyze_data <- function(measure, measurestr) {
     for (rgen in rgenerators) {
       #select data for the current read generator
       current <- select_data_for_rgen(current_soft_data, rgen)
+      current$softname <- softname
 
       #aggregate as mean per pruning
       data_mean <- aggregate(as.formula(paste0(formula_mean, " + ",
@@ -186,7 +187,6 @@ analyze_data <- function(measure, measurestr) {
       #order from best to wort parameters combination
       current$df <- df_meanofmean[order(df_meanofmean[[measure]]), ]
       current$df["software"] <- softname    #is this necessary?
-      current$softname <- softname
 
       #register results
 
