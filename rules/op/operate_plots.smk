@@ -19,8 +19,8 @@ rule plot_accuracy_results:
     input:
         os.path.join(_working_dir, "results.csv")
     output:
-        nd_plots=get_accuracy_nd_plots(),
-        end_plots=get_accuracy_end_plots()
+        nd_plots=get_accuracy_plots("ND"),
+        end_plots=get_accuracy_plots("eND"),
     log:
         os.path.join(_working_dir, "logs", "R", "accuracy_plots.log")
     params:

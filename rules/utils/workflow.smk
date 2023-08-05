@@ -18,42 +18,34 @@ from pprint import pprint
 
 _work_dir = cfg.get_work_dir(config)
 
-def get_accuracy_nd_plots() -> List[str]:
+def get_accuracy_plots(distance) -> List[str]:
     """
     Creates a list of plot files that will be computed in the accuracy mode.
     """
     l = list()
+    generators = cfg.get_read_generators(config)
     #epa-ng
     if "epang" in config["test_soft"]:
-        l.append(expand(_work_dir + "/summary_plot_ND_epang_{heuristic}.svg",
-                        heuristic=config["config_epang"]["heuristics"]))
-        l.append(expand(_work_dir + "/summary_table_ND_epang_{heuristic}.csv",
-                        heuristic=config["config_epang"]["heuristics"]))
+        l.append(expand(_work_dir + "/summary_plot_" + distance +
+                        "_epang_{heuristic}_{rgen}.svg",
+                        heuristic=config["config_epang"]["heuristics"],
+                        rgen=generators))
+        l.append(expand(_work_dir + "/summary_table_" + distance +
+                        "_epang_{heuristic}_{rgen}.csv",
+                        heuristic=config["config_epang"]["heuristics"],
+                        rgen=generators))
     #all other software
-    l.append(expand(_work_dir + "/summary_plot_ND_{soft}.svg",
-                    soft=[x for x in config["test_soft"] if x != "epang"]))
-    l.append(expand(_work_dir + "/summary_table_ND_{soft}.csv",
-                    soft=[x for x in config["test_soft"] if x != "epang"]))
+    l.append(expand(_work_dir + "/summary_plot_" + distance +
+                    "_{soft}_{rgen}.svg",
+                    soft=[x for x in config["test_soft"] if x != "epang"],
+                    rgen=generators))
+    l.append(expand(_work_dir + "/summary_table_" + distance +
+                    "_{soft}_{rgen}.csv",
+                    soft=[x for x in config["test_soft"] if x != "epang"],
+                    rgen=generators))
     return l
 
 
-def get_accuracy_end_plots() -> List[str]:
-    """
-    Creates a list of plot files that will be computed in the accuracy mode
-    """
-    l = list()
-    #epa-ng
-    if "epang" in config["test_soft"]:
-        l.append(expand(_work_dir + "/summary_plot_eND_epang_{heuristic}.svg",
-                        heuristic=config["config_epang"]["heuristics"]))
-        l.append(expand(_work_dir + "/summary_table_eND_epang_{heuristic}.csv",
-                        heuristic=config["config_epang"]["heuristics"]))
-    #all other software
-    l.append(expand(_work_dir + "/summary_plot_eND_{soft}.svg",
-                    soft=[x for x in config["test_soft"] if x != "epang"]))
-    l.append(expand(_work_dir + "/summary_table_eND_{soft}.csv",
-                    soft=[x for x in config["test_soft"] if x != "epang"]))
-    return l
 
 
 def get_likelihood_plots() -> List[str]:
@@ -91,8 +83,8 @@ def build_accuracy_workflow() -> List[str]:
     csv = [_work_dir + "/results.csv"]
 
     # collection of results and generation of summary plots
-    node_distance_reports = get_accuracy_nd_plots()
-    expected_node_distance_reports = get_accuracy_end_plots()
+    node_distance_reports = get_accuracy_plots("ND")
+    expected_node_distance_reports = get_accuracy_plots("eND")
 
     return list(itertools.chain(placements, csv, node_distance_reports, expected_node_distance_reports))
 
