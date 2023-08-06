@@ -14,7 +14,6 @@ from typing import Dict
 from Bio import SeqIO
 import pewo.config as cfg
 from pewo.templates import get_common_queryname_template
-from pewo.io.fasta import split_fasta
 
 _work_dir = cfg.get_work_dir(config)
 
@@ -57,6 +56,8 @@ rule operate_pruning:
         t = config["dataset_tree"],
         #r = get_input_reads()
     output:
+        #os.path.join(_work_dir, "Dtx.csv"),   #Won't work for likelihood
+        #os.path.join(_work_dir, "D2tx.csv"),
         a = expand(_work_dir + "/A/{pruning}.align", pruning=range(config["pruning_count"])),
         t = expand(_work_dir + "/T/{pruning}.tree", pruning=range(config["pruning_count"])),
         g = expand(_work_dir + "/G/{pruning}.fasta", pruning=range(config["pruning_count"])),

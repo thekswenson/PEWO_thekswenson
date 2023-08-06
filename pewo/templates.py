@@ -123,9 +123,10 @@ def get_common_queryname_re(config: Dict) -> Pattern:
 
 def get_common_template_args(config: Dict) -> Dict[str, Any]:
     """
-    Each placement query has a template name based on two type of inputs:
+    Each placement query has a template name based on three type of inputs:
     1) common arguments: tree and query sequences -- independent of software
     2) specific arguments: model params etc. -- depends on software used
+    3) read generator arguments: depends on the read generator used
 
     This method creates a dict of common template arguments that can be passed to
     'expand' function of snakemake to resolve the common query name template given
@@ -135,7 +136,7 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
     if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
         return {
             "pruning": ["0"],
-            "generator": "likelihood",
+            "generator": "LIKELIHOOD",
             "length": ["0"],
             "query": fasta.get_sequence_ids(cfg.get_query_user(config))
         }
@@ -152,6 +153,7 @@ def get_queryname_template(config: Dict, software: PlacementSoftware, **kwargs) 
     Each placement query has a template name based on two type of inputs:
     1) common arguments: tree and query sequences -- independent of software
     2) specific arguments: model params etc. -- depends on software used
+    3) read generator arguments: depends on the read generator used
 
     This method creates a full placement output filename template, based on the
     both types of inputs. Thus it extends the name given by

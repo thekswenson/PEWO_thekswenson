@@ -54,7 +54,9 @@ def get_rappas_input_reads(wildcards):
 
     # multiple reads per fasta
     if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
-        return [filename.format(length=0)]
+        return [filename.format(query=wildcards.query,
+                                generator=wildcards.generator,
+                                length=0)]
     # one read per fasta
     else:
         return [filename.format(pruning=wildcards.pruning,

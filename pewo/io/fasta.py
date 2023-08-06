@@ -41,6 +41,9 @@ def split_fasta(input_file: str, nametemplate: str) -> List[str]:
     """
     Splits the input .fasta file into multiple .fasta files,
     one sequence per file. Returns the list of resulting files.
+
+    Assumes that there are three keywords in the nametemplate:
+      query, generator, length
     """
     files = []
     for record in SeqIO.parse(input_file, "fasta"):
@@ -49,11 +52,14 @@ def split_fasta(input_file: str, nametemplate: str) -> List[str]:
         # makes implicit dependency on the read file name convention in ALL rules
         # looking for read files: alignment_hmm, placement_rappas_dbinram etc.
 
-            #Fill the in the name template with record id and 0 read length,
+            #Fill in the name template with record id and 0 read length,
             #no matter what the keyworkd arguments are:
         keywords = [x[1] for x in Formatter().parse(nametemplate) if x[1]]
-        replace = {key: val for key, val in zip(keywords,
-                                                (_seq_id_filter(record.id), 0))}
+        assert sorted(keywords) == ["generator", "length", "query"]
+
+        replace = {"query": _seq_id_filter(record.id),
+                   "generator": "LIKELIHOOD",
+                   "length": 0}
         filename = nametemplate.format(**replace)
 
         _write_fasta([record], filename)
