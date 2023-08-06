@@ -27,6 +27,7 @@ _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 _pplacer_place_benchmark_template = get_benchmark_template(config,
                                                            PlacementSoftware.PPLACER,
                                                            p="pruning",
+                                                           q="query",
                                                            generator="generator",
                                                            length="length",
                                                            ms="ms",

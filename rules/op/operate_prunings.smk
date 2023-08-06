@@ -71,7 +71,7 @@ rule operate_pruning:
         pcount = config["pruning_count"],
         states = config["states"],
         jar = config["pewo_jar"],
-        length = get_params_length()
+        length = get_params_length(),
         #length_sd=config["read_length_sd"],
         #bpe=config["bpe"],
     run:

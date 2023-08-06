@@ -1,5 +1,21 @@
 """
-This module contains functions that generate snakemake templates for output files and directories.
+This module contains functions that generate snakemake templates for output
+files and directories.
+
+Paths and filenames of output, log, and benchmark files depend on the config
+file setting.  This file contains functions to generate templates with
+wildcards that depend on the configuration.
+
+To add features, you will have to modify these templates, but also some lines
+in each of the placement files (e.g. rappas.smk, epa.smk).
+
+Some peculiarities of the wildcards are:
+- The likelihood and resources modes don't have any pruning or read generation,
+  but they still have the "pruning" and "generator" wildcards. The pruning
+  value will always be 0, and the generator value will be "LIKELIHOOD" or
+  "RESOURCES".
+- The likelihood and resources modes have a specified query file, so they have
+  a "query" wildcard, whereas the accuracy mode does not have it.
 """
 
 __author__ = "Nikolai Romashchenko"
@@ -90,18 +106,28 @@ def get_experiment_log_dir_template(config: Dict, software: Software) -> str:
     return os.path.join(cfg.get_work_dir(config), "logs", software_name, "{pruning}")
 
 
-def get_name_prefix(config: Dict) -> str:
-    return "query" if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD else "pruning"
+def get_queryname_prefix(config: Dict) -> str:
+    mode = cfg.get_mode(config)
+    if mode == cfg.Mode.LIKELIHOOD or mode == cfg.Mode.RESOURCES:
+        return "query"
+    else:
+        return "pruning"
 
 
 def get_common_queryname_template(config: Dict) -> str:
     """
-    Each placement query has a template name based on two type of inputs:
+    Each placement query was either specified from an input file, or was
+    generated.  The template name is based on three type of inputs:
     1) common arguments: tree and query sequences -- independent of software
     2) specific arguments: model params etc. -- depends on software used
+    3) read generator arguments: read generator params etc.
 
     This method creates a query filename template, based on the cfg.Mode and 
     the read length (e.g. "{pruning}_paritition_r{length}").
+
+    Generated reads are based on prunings, so the template with have a
+    "pruning" keyword.  User queries are based on specified query files, so the
+    template with have a "query" keyword.
 
     Note that the format of this template should match ther regular expression
     returned by get_common_queryname_re().
@@ -109,7 +135,7 @@ def get_common_queryname_template(config: Dict) -> str:
 
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
-    return "{" + get_name_prefix(config) + "}_{generator}_r{length}"
+    return "{" + get_queryname_prefix(config) + "}_{generator}_r{length}"
 
 
 def get_common_queryname_re(config: Dict) -> Pattern:
@@ -140,12 +166,21 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
             "length": ["0"],
             "query": fasta.get_sequence_ids(cfg.get_query_user(config))
         }
-    else:
+    elif cfg.get_mode(config) == cfg.Mode.RESOURCES:
+        return {
+            "pruning": ["0"],
+            "generator": "RESOURCES",
+            "length": ["0"],
+            "query": ["0"]
+        }
+    elif cfg.get_mode(config) == cfg.Mode.ACCURACY:
         return {
             "pruning": range(config["pruning_count"]),
             "generator": cfg.get_read_generators(config),
             "length": config["read_length"]
         }
+    else:
+        raise(RuntimeError(f"Unknown mode: {cfg.get_mode(config)}"))
 
 
 def get_queryname_template(config: Dict, software: PlacementSoftware, **kwargs) -> str:
@@ -327,10 +362,13 @@ def get_ar_output_templates(config: Dict, arsoft: str) -> List[str]:
     """
     Returns a list of resulting files of the ancestral reconstruction stage.
     """
-
+    #dirwildcards = "{pruning}"
+    #if cfg.get_mode(config) == cfg.Mode.RESOURCES:
+    #    dirwildcards = "{pruning}_{query}"
     # FIXME: Make a software class for every AR software, and make output directories
     # for every AR software
-    output_dir = os.path.join(cfg.get_work_dir(config), "RAPPAS", "{pruning}", "red{red}_ar" + arsoft.upper(), "AR")
+    output_dir = os.path.join(cfg.get_work_dir(config), "RAPPAS", "{pruning}",
+                              "red{red}_ar" + arsoft.upper(), "AR")
 
     if arsoft == "PHYML":
         output_filenames = [

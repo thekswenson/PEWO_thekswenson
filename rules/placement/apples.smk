@@ -19,6 +19,7 @@ _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 _apples_place_benchmark_template = get_benchmark_template(config,
                                                           PlacementSoftware.APPLES,
                                                           p="pruning",
+                                                          q="query",
                                                           generator="generator",
                                                           length="length",
                                                           meth="meth",

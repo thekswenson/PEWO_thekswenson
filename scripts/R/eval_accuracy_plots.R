@@ -5,7 +5,7 @@ args <- commandArgs(trailingOnly = TRUE)
 # test if there is at least one argument
 if (length(args) < 2) {
   stop(paste0("The file results.csv must be supplied as 1st argument and the ",
-              "workdir as 2nd argument (input file)."), call. = FALSE)
+              "workdir as 2nd argument (input file).\n"), call. = FALSE)
 }
 
 library(RColorBrewer)

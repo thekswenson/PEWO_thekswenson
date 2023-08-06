@@ -100,7 +100,8 @@ def build_resources_workflow() -> List[str]:
     l.append(_work_dir + "/T/0.tree")
     l.append(_work_dir + "/G/0.fasta")
     filename = get_common_queryname_template(config).format(pruning=0,
-                                                            generator="resources",
+                                                            query=0,
+                                                            generator="RESOURCES",
                                                             length=0)+".fasta"
     l.append(_work_dir + "/R/" + filename)
 

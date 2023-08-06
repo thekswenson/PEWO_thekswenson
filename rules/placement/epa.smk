@@ -33,6 +33,7 @@ _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
 _epa_place_benchmark_template = get_benchmark_template(config,
                                                        PlacementSoftware.EPA,
                                                        p="pruning",
+                                                       q="query",
                                                        generator="generator",
                                                        length="length", g="g",
                                                        rule_name="placement") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""

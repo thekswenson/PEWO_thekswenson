@@ -16,6 +16,7 @@ _working_dir = cfg.get_work_dir(config)
 _appspam_place_benchmark_template = get_benchmark_template(config,
                                                            PlacementSoftware.APPSPAM,
                                                            p="pruning",
+                                                           q="query",
                                                            generator="generator",
                                                            length="length",
                                                            mode="mode", w="w",

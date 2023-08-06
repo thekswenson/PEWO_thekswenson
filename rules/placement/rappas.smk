@@ -13,7 +13,7 @@ import pewo.config as cfg
 from pewo.software import PlacementSoftware, get_ar_binary
 from pewo.templates import get_output_template, get_log_template, get_experiment_dir_template, \
     get_ar_output_templates, get_benchmark_template, get_output_template_args, get_experiment_log_dir_template, \
-    get_common_queryname_template
+    get_common_queryname_template, get_software_dir
 
 
 _working_dir = cfg.get_work_dir(config)
@@ -21,13 +21,12 @@ _rappas_experiment_dir = get_experiment_dir_template(config, PlacementSoftware.R
 _rappas_db_dir = os.path.join(get_software_dir(config, PlacementSoftware.RAPPAS), "{pruning}",
                               "red{red}_ar{ar}", "k{k}_o{o}")
 
-
 # Benchmark templates
 _rappas_build_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
-    p="pruning", generator="generator", k="k", o="o", red="red", ar="ar",
+    p="pruning", k="k", o="o", red="red", ar="ar",
     rule_name="dbbuild") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 _rappas_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
-    p="pruning", generator="generator", length="length", k="k", o="o", red="red", ar="ar",
+    p="pruning", q="query", generator="generator", length="length", k="k", o="o", red="red", ar="ar",
     rule_name="placement")  if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 rappas_benchmark_templates = [_rappas_build_benchmark_template, _rappas_place_benchmark_template]
@@ -52,8 +51,9 @@ def get_rappas_input_reads(wildcards):
     filename = os.path.join(_working_dir, "R",
                             get_common_queryname_template(config) + ".fasta")
 
+    mode = cfg.get_mode(config)
     # multiple reads per fasta
-    if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
+    if mode == cfg.Mode.LIKELIHOOD or mode == cfg.Mode.RESOURCES:
         return [filename.format(query=wildcards.query,
                                 generator=wildcards.generator,
                                 length=0)]
@@ -127,7 +127,8 @@ rule placement_rappas:
                          "-w {params.workdir} " + \
                          "&> {log}"
 
-        if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
+        mode = cfg.get_mode(config)
+        if mode == cfg.Mode.LIKELIHOOD or mode == cfg.Mode.RESOURCES:
             querystr = get_common_queryname_template(config).format(query=wildcards.query,
                                                                     generator=wildcards.generator,
                                                                     length=0)

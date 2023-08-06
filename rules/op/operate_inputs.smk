@@ -38,8 +38,8 @@ rule define_resource_inputs:
         aout=_work_dir+"/A/0.align",
         tout=_work_dir+"/T/0.tree",
         gout=_work_dir+"/G/0.fasta",
-        rout=_work_dir+"/R/"+get_common_queryname_template(config).format(pruning=0,
-                                                                          generator="resources",
+        rout=_work_dir+"/R/"+get_common_queryname_template(config).format(query=0,
+                                                                          generator="RESOURCES",
                                                                           length=0)+".fasta"
     run:
         if not os.path.isdir(_work_dir):
