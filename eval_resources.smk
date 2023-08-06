@@ -7,13 +7,17 @@ CPU/RAM/disk measurements are done via SnakeMake "benchmark" functions.
 __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
+if not os.environ.get('CONDA_PREFIX'):
+    print("WARNING: activate conda environment with 'conda activate PEWO'!",
+          file=sys.stderr)
+
 # this config file is set globally for all subworkflows
 configfile: "config.yaml"
 
 config["mode"] = "resources"
 
 # explicitly set config as if there was a single pruning which in fact represents the full (NOT pruned) tree.
-# this allow to use the same config file for both 'accuracy' and 'resources' modes of PEWO worflow
+# this allows the use of the same config file for both 'accuracy' and 'resources' modes of PEWO workflow
 # NOTE: this statement MUST be set BEFORE the "includes"
 config["pruning_count"] = 1
 config["read_length"] = [0]
@@ -33,8 +37,8 @@ include:
     "rules/op/ar.smk"
 include:
     "rules/placement/rappas.smk"
-include:
-    "rules/placement/rappas2.smk"
+#include:
+#    "rules/placement/rappas2.smk"
 #alignment (for distance-based and ML approaches)
 include:
     "rules/alignment/hmmer.smk"

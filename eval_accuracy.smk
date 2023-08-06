@@ -7,6 +7,10 @@ based on the setup defined in the config file.
 __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
+if not os.environ.get('CONDA_PREFIX'):
+    print("WARNING: activate conda environment with 'conda activate PEWO'!",
+          file=sys.stderr)
+
 configfile: "config.yaml"
 
 
@@ -14,7 +18,7 @@ config["mode"] = "accuracy"
 
 # Explicitly set config to not repeat binary executions,
 # which is an option that should be considered only in 'resource' evaluation mode.
-# this allow to use the same config file for both 'accuracy' and 'resources' modes of PEWO worflow
+# this allow the use of the same config file for both 'accuracy' and 'resources' modes of PEWO workflow
 # NOTE: this statement MUST be set BEFORE the "includes"
 config["repeats"] = 1
 
@@ -36,8 +40,8 @@ include:
     "rules/placement/rappas.smk"
 #include:
 #    "rules/placement/rappas_dbinram.smk"
-include:
-    "rules/placement/rappas2.smk"
+#include:
+#    "rules/placement/rappas2.smk"
 #alignment (for distance-based and ML approaches)
 include:
     "rules/alignment/hmmer.smk"

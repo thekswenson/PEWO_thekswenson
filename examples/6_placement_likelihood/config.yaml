@@ -14,7 +14,7 @@ workdir: examples/6_placement_likelihood/run
 states: 0
 
 # software to test, at least one of: epa, epang, pplacer, rappas, apples
-test_soft: [rappas] #, epang, pplacer]
+test_soft: [rappas, epang, pplacer]
 
 # read lengths to test
 read_length: [150]

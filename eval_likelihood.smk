@@ -7,19 +7,23 @@ the evaluation workflow itself based on the setup defined in the config file.
 __author__ = "Nikolai Romashchenko"
 __license__ = "MIT"
 
+if not os.environ.get('CONDA_PREFIX'):
+    print("WARNING: activate conda environment with 'conda activate PEWO'!",
+          file=sys.stderr)
+
 configfile: "config.yaml"
 
 config["mode"] = "likelihood"
 
 # Explicitly set config as if there was a single pruning which in fact represents the full (NOT pruned) tree.
-# This allow to use the same config file for both 'accuracy' and 'resources' modes of PEWO worflow
+# This allow the use of the same config file for both 'accuracy' and 'resources' modes of PEWO workflow
 # NOTE: this statement MUST be set BEFORE the "includes"
 config["pruning_count"] = 1
 config["read_length"] = [0]
 
 # Explicitly set config to not repeat binary executions,
 # which is an option that should be considered only in 'resource' evaluation mode.
-# this allow to use the same config file for both 'accuracy' and 'resources' modes of PEWO worflow
+# this allow the use of the same config file for both 'accuracy' and 'resources' modes of PEWO workflow
 # NOTE: this statement MUST be set BEFORE the "includes"
 config["repeats"] = 1
 
@@ -40,8 +44,8 @@ include:
     "rules/op/ar.smk"
 include:
     "rules/placement/rappas.smk"
-include:
-    "rules/placement/rappas2.smk"
+#include:
+#    "rules/placement/rappas2.smk"
 #alignment (for distance-based and ML approaches)
 include:
     "rules/alignment/hmmer.smk"

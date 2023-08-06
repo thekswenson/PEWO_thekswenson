@@ -7,6 +7,10 @@ based on the setup defined in the config file.
 __author__ = "Benjamin Linard, Nikolai Romashchenko"
 __license__ = "MIT"
 
+if not os.environ.get('CONDA_PREFIX'):
+    print("WARNING: activate conda environment with 'conda activate PEWO'!",
+          file=sys.stderr)
+
 configfile: "config.yaml"
 
 
