@@ -90,7 +90,7 @@ rule db_build_rappas:
         arbin=lambda wildcards: get_ar_binary(config, wildcards.ar)
     run:
          shell(
-            "java -Xms2G -Xmx"+str(config["config_rappas"]["memory"])+"G -jar $(which RAPPAS.jar) -v 0 -p b -b $(which {params.arbin}) "
+            "java -Xms2G -Djava.awt.headless=true -Xmx"+str(config["config_rappas"]["memory"])+"G -jar $(which RAPPAS.jar) -v 0 -p b -b $(which {params.arbin}) "
             "-k {wildcards.k} --omega {wildcards.o} -t {input.t} -r {input.a} "                                                          
             "--gap-jump-thresh 1.0 "
             "-w {params.workdir} --ardir {params.ardir} -s {params.states} --ratio-reduction {wildcards.red} "
@@ -115,7 +115,7 @@ rule placement_rappas:
         minlwr = config["minlwr"]
     run:
         memory = config['config_rappas']['memory']
-        rappas_command = "java -Xms2G " + \
+        rappas_command = "java -Xms2G -Djava.awt.headless=true " + \
                          f"-Xmx{memory}G " + \
                          "-jar $(which RAPPAS.jar) " + \
                          "--keep-at-most {params.maxp} " + \

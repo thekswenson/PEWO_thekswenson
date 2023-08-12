@@ -23,7 +23,7 @@ _rappas_build_benchmark_template = get_benchmark_template(config, PlacementSoftw
     p="pruning", k="k", o="o", red="red", ar="ar",
     rule_name="dbbuild") if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 _rappas_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.RAPPAS,
-    p="pruning", length="length", k="k", o="o", red="red", ar="ar",
+    p="pruning", q="query", generator="generator", length="length", k="k", o="o", red="red", ar="ar",
     rule_name="placement")  if cfg.get_mode(config) == cfg.Mode.RESOURCES else ""
 
 rappas_benchmark_templates = [_rappas_build_benchmark_template, _rappas_place_benchmark_template]
@@ -39,24 +39,28 @@ rappas_benchmark_template_args = [
 ]
 
 
-def get_rappas_input_reads(pruning):
+def get_rappas_input_reads(wildcards):
     """
     Creates a list of input reads files. For generated reads from a pruning,
     all read lengths are passed in a single RAPPAS execution.
-    Read lengths can not be wildcards and must be set manually
+    Read lengths cannot be wildcards and must be set manually
     """
-    output_dir = os.path.join(_working_dir, "R")
+    filename = os.path.join(_working_dir, "R",
+                            get_common_queryname_template(config) + ".fasta")
 
-    # one read per fasta
-    if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
-        return [os.path.join(output_dir, "{query}_r0.fasta")]
+    mode = cfg.get_mode(config)
     # multiple reads per fasta
+    if mode == cfg.Mode.LIKELIHOOD or mode == cfg.Mode.RESOURCES:
+        return [filename.format(query=wildcards.query,
+                                generator=wildcards.generator,
+                                length=0)]
+    # one read per fasta
     else:
-        # FIXME:
-        # This is a dependency on pewo.templates.get_common_queryname_template result.
-        # Look for a decent way to get rid of it.
-        return [os.path.join(output_dir, pruning + "_r" + str(l) + ".fasta")
+        return [filename.format(pruning=wildcards.pruning,
+                                generator=wildcards.generator,
+                                length=l)
                 for l in config["read_length"]]
+
 
 rule db_build_in_ram_rappas:
     """
@@ -66,7 +70,7 @@ rule db_build_in_ram_rappas:
     input:
         a = os.path.join(_working_dir, "A", "{pruning}.align"),
         t = os.path.join(_working_dir, "T", "{pruning}.tree"),
-        r = lambda wildcards: get_rappas_input_reads(wildcards.pruning),
+        r = lambda wildcards: get_rappas_input_reads,
         ar = lambda wildcards: get_ar_output_templates(config, wildcards.ar)
     output:
         jplace = get_output_template(config, PlacementSoftware.RAPPAS, "jplace")
@@ -89,7 +93,7 @@ rule db_build_in_ram_rappas:
         arbin = lambda wildcards: get_ar_binary(config, wildcards.ar)
     run:
         shell(
-            "java -Xms2G -Xmx" + str(config["config_rappas"]["memory"]) + "G -jar $(which RAPPAS.jar) -p b "
+            "java -Xms2G -Djava.awt.headless=true -Xmx" + str(config["config_rappas"]["memory"]) + "G -jar $(which RAPPAS.jar) -p b "
             "-b $(which {params.arbin}) "
             "-k {wildcards.k} --omega {wildcards.o} -t {input.t} -r {input.a} -q {params.querystring} "
             "-w {params.workdir} --ardir {params.ardir} -s {params.states} --ratio-reduction {wildcards.red} "

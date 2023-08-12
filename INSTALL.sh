@@ -76,17 +76,17 @@ done
 #git clone https://github.com/blinard-BIOINFO/PEWO_workflow.git $install_dir
 #cd $install_dir
 
-## install conda environment, if not environment called "PEWO" exists
+## install mamba environment, if not environment called "PEWO" exists
 conda env list | grep "^PEWO " &> /dev/null
 if [ $? -ne 0 ] ; then
 	echo "PEWO installer: Creating environment... (this can take some time)"
-	conda env create --file envs/environment.yaml
+	mamba env create --file envs/environment.yaml
 	if [ $? -ne 0 ] ; then
 		echo echo "PEWO installer: Cannot create environment. Write permissions ?"
 		exit 1
 	fi
 else
-	echo "PEWO installer: A conda environment named PEWO already exists, skiping creation."
+	echo "PEWO installer: A mamba environment named PEWO already exists, skiping creation."
 fi
 
 
@@ -94,7 +94,7 @@ echo "PEWO installer: Testing environment..."
 eval "$(conda shell.bash hook)"
 conda activate PEWO
 if [ $? -ne 0 ]  ; then
-        echo "PEWO installer: PEWO environment cannot be activated, please check your conda installation."
+        echo "PEWO installer: PEWO environment cannot be activated, please check your mamba installation."
 	echo "PEWO installer: You will find environment definitions in $install_dir/envs/environment.yaml"
 	exit 1
 else
@@ -102,7 +102,7 @@ else
 fi
 
 ## build java dependencies
-## this uses java JDK installed in the conda environement
+## this uses java JDK installed in the mamba environement
 echo "PEWO installer: Building dependencies..."
 echo "PEWO installer: Testing java JDK installation..."
 for i in javac ant java
