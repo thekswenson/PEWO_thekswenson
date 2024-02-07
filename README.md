@@ -112,7 +112,7 @@ You can launch a dry-run, if no error is throwed, PEWO is correctly installed:
 ``` bash
 snakemake -np \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/1_fast_test_of_accuracy_procedure/run \
+--config workdir=examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
@@ -121,7 +121,7 @@ You can launch a 20 minutes test, using 2 CPU cores.
 ``` bash
 snakemake -p --cores 2 \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/1_fast_test_of_accuracy_procedure/run \
+--config workdir=examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
@@ -223,7 +223,7 @@ config_rappas:
 ```
 snakemake -p --cores 8 --resources mem_mb=32000 \
 --snakefile eval_accuracy.smk \
---config workdir=`pwd`/examples/2_placement_accuracy_for_a_bacterial_taxonomy/run \
+--config workdir=examples/2_placement_accuracy_for_a_bacterial_taxonomy/run \
 --configfile examples/2_placement_accuracy_for_a_bacterial_taxonomy/config.yaml
 ```
 With this setup, snakemake will wait for 8gb to be free before each RAPPAS launch and will run with a maximum of four RAPPAS launches in parallel (32/8=4).
