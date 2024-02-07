@@ -112,7 +112,6 @@ You can launch a dry-run, if no error is throwed, PEWO is correctly installed:
 ``` bash
 snakemake -np \
 --snakefile eval_accuracy.smk \
---config workdir=examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
@@ -121,7 +120,6 @@ You can launch a 20 minutes test, using 2 CPU cores.
 ``` bash
 snakemake -p --cores 2 \
 --snakefile eval_accuracy.smk \
---config workdir=examples/1_fast_test_of_accuracy_procedure/run \
 --configfile examples/1_fast_test_of_accuracy_procedure/config.yaml
 ```
 
